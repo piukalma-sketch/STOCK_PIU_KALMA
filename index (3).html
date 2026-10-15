@@ -1,0 +1,2132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Piu Kalma · Stock</title>
+<link rel="icon" type="image/png" href="data:image/png;base64,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">
+<meta name="theme-color" content="#F8F6F2">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+<style>
+  :root{
+    --ink:#1A1A1A; --ink-soft:#5C5A56; --paper:#F8F6F2; --paper-dim:#EEEAE3; --card:#FFFFFF;
+    --accent:#3A3835; --accent-dark:#1A1A1A; --gold:#B39A73; --sage:#7C8A7C; --line:#DDD8CF; --danger:#C25450; --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--paper); color:var(--ink); font-family:'Work Sans', sans-serif; -webkit-font-smoothing:antialiased;}
+  h1,h2,h3{font-family:'Fraunces', serif; margin:0; letter-spacing:-0.01em;}
+  .mono{font-family:'IBM Plex Mono', monospace;}
+  #app{max-width:1180px; margin:0 auto; padding:0 20px 60px;}
+
+  header.topbar{padding:28px 0 18px; border-bottom:2px solid var(--ink); display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap;}
+  header.topbar .brand{display:flex; align-items:center; gap:12px;}
+  header.topbar .logo{height:78px; width:auto; display:block; flex:none;}
+  header.topbar h1{font-size:26px; font-weight:600; color:var(--ink);}
+  @media (max-width:640px){header.topbar .logo{height:60px;}}
+  header.topbar .sub{font-size:12px; color:var(--ink-soft); margin-top:2px; letter-spacing:.06em; text-transform:uppercase;}
+
+  nav.tabs{display:flex; gap:4px; padding:14px 0 0; flex-wrap:wrap;}
+  nav.tabs button{font-family:'Work Sans', sans-serif; font-size:14.5px; font-weight:600; background:transparent; border:1px solid var(--line); color:var(--ink-soft); padding:10px 20px; border-radius:999px; cursor:pointer; transition:all .15s ease;}
+  nav.tabs button:hover{border-color:var(--ink-soft); color:var(--ink);}
+  nav.tabs button.active{background:var(--ink); color:var(--paper); border-color:var(--ink);}
+
+  nav.subtabs{display:flex; gap:6px; padding:0 0 18px; flex-wrap:wrap; border-bottom:1px solid var(--line); margin-bottom:20px;}
+  nav.subtabs button{font-family:'Work Sans', sans-serif; font-size:12.5px; font-weight:500; background:transparent; border:none; color:var(--ink-soft); padding:8px 4px; cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-1px;}
+  nav.subtabs button:hover{color:var(--ink);}
+  nav.subtabs button.active{color:var(--ink); border-bottom-color:var(--accent); font-weight:600;}
+
+  section.panel{display:none; padding-top:26px; animation:fade .2s ease;}
+  section.panel.active{display:block;}
+  .subpanel{display:none;}
+  .subpanel.active{display:block;}
+  @keyframes fade{from{opacity:0; transform:translateY(3px);} to{opacity:1; transform:translateY(0);}}
+
+  .cards-row{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:22px;}
+  .stat-card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:16px 18px;}
+  .stat-card .num{font-family:'Fraunces', serif; font-size:28px; font-weight:600; color:var(--ink);}
+  .stat-card .lbl{font-size:11px; text-transform:uppercase; letter-spacing:.07em; color:var(--ink-soft); margin-top:2px;}
+
+  .card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:20px;}
+  .card + .card{margin-top:16px;}
+
+  label{display:block; font-size:11.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-soft); margin-bottom:5px; font-weight:600;}
+  input, select{width:100%; padding:9px 11px; border:1px solid var(--line); border-radius:7px; font-family:'IBM Plex Mono', monospace; font-size:13.5px; background:var(--paper); color:var(--ink);}
+  input:focus, select:focus{outline:none; border-color:var(--accent);}
+  input:disabled{opacity:.7; background:var(--paper-dim);}
+  .field{margin-bottom:14px;}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  .grid3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px;}
+  @media (max-width:640px){.grid2,.grid3{grid-template-columns:1fr;}}
+
+  button.primary{background:var(--ink); color:var(--paper); border:none; border-radius:7px; padding:11px 20px; font-family:'Work Sans',sans-serif; font-weight:600; font-size:13.5px; cursor:pointer; transition:background .15s ease;}
+  button.primary:hover{background:var(--ink-soft);}
+  button.primary:disabled{opacity:.4; cursor:not-allowed;}
+  button.secondary{background:transparent; color:var(--ink); border:1px solid var(--ink); border-radius:7px; padding:10px 18px; font-family:'Work Sans',sans-serif; font-weight:600; font-size:13.5px; cursor:pointer;}
+  button.secondary:hover{background:var(--paper-dim);}
+  button.secondary:disabled{opacity:.4; cursor:not-allowed;}
+  button.danger-link{background:none; border:none; color:var(--danger); font-size:12px; cursor:pointer; text-decoration:underline; padding:0;}
+
+  table{width:100%; border-collapse:collapse; margin-top:10px;}
+  th,td{text-align:left; padding:9px 10px; border-bottom:1px solid var(--line); font-size:13px;}
+  th{font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-soft); font-weight:600;}
+  td.num-cell{font-family:'IBM Plex Mono', monospace;}
+  tr:hover td{background:var(--paper-dim);}
+
+  .badge{display:inline-block; padding:2px 9px; border-radius:999px; font-size:11px; font-family:'IBM Plex Mono',monospace;}
+  .badge.talle{background:#E9E6EF; color:#4F4668;}
+  .badge.color{background:#EFE6E1; color:#6B4A3E;}
+  .badge.loc{background:#E3EDE6; color:var(--sage);}
+  .badge.temp{background:#F3ECDD; color:#8A6B2F;}
+  .badge.subtemp{background:#EEE9DF; color:#6E5A3A;}
+  .badge.tipo{background:#E6EAE2; color:#4F6150;}
+  .combo-wrap{position:relative;}
+  .combo-options{position:absolute; top:calc(100% + 4px); left:0; right:0; background:var(--paper); border:1px solid var(--line); border-radius:7px; max-height:240px; overflow-y:auto; z-index:30; box-shadow:0 10px 24px rgba(26,26,26,.14);}
+  .combo-option{padding:8px 11px; cursor:pointer; font-size:13px; border-bottom:1px solid var(--line);}
+  .combo-option:last-child{border-bottom:none;}
+  .combo-option:hover, .combo-option.active{background:var(--paper-dim);}
+  .combo-empty{padding:9px 11px; color:var(--ink-soft); font-size:13px;}
+  .cat-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:18px; margin-top:16px;}
+  .cat-card{background:var(--card); border:1px solid var(--line); border-radius:10px; padding:12px; box-shadow:0 3px 8px rgba(26,26,26,.06);}
+  .photo-wrap{position:relative;}
+  .cat-card img, .cat-card .ph-empty, #photo-modal-img, #photo-modal .ph-empty{width:100%; aspect-ratio:1; object-fit:cover; border-radius:7px; background:var(--paper-dim); display:block;}
+  .cat-card .ph-empty{display:flex; align-items:center; justify-content:center; color:var(--ink-soft); font-size:11px; text-align:center; padding:8px;}
+  .more-badge{position:absolute; bottom:6px; right:6px; background:rgba(26,26,26,.78); color:#fff; font-size:11px; padding:2px 8px; border-radius:999px; cursor:pointer;}
+  .photo-nav{position:absolute; top:50%; transform:translateY(-50%); background:rgba(26,26,26,.55); color:#fff; border:none; width:24px; height:24px; border-radius:50%; cursor:pointer; font-size:13px; line-height:1;}
+  .photo-nav.prev{left:6px;} .photo-nav.next{right:6px;}
+  .cat-card .name{font-weight:600; font-size:14px; margin-top:10px;}
+  .cat-card .price{font-family:'IBM Plex Mono', monospace; font-size:16px; margin-top:2px; color:var(--ink);}
+  .cat-card .stock-line{font-size:12px; color:var(--ink-soft); margin:2px 0 10px;}
+  .cat-card .cat-actions{display:flex; gap:8px;}
+  .cat-card .cat-actions button{flex:1; padding:7px 0; font-size:12px;}
+  .photo-thumbs{display:flex; gap:12px; flex-wrap:wrap; margin-top:10px;}
+  .photo-thumbs .thumb{width:84px;}
+  .photo-thumbs .thumb-img-wrap{position:relative; width:84px; height:84px;}
+  .photo-thumbs .thumb img{width:100%; height:100%; object-fit:cover; border-radius:6px; border:1px solid var(--line); display:block;}
+  .photo-thumbs .cover-tag{position:absolute; top:4px; left:4px; background:rgba(26,26,26,.78); color:#fff; font-size:9px; padding:1px 6px; border-radius:999px;}
+  .photo-thumbs .thumb-actions{display:flex; justify-content:center; gap:6px; margin-top:4px;}
+  .photo-thumbs .thumb-actions button{background:none; border:none; cursor:pointer; font-size:13px; padding:2px; line-height:1; color:var(--ink-soft);}
+  .photo-thumbs .thumb-actions [data-del-photo]{color:var(--danger);}
+
+  .toolbar{display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end; margin-bottom:16px;}
+  .toolbar .field{margin-bottom:0; min-width:150px; flex:1;}
+  .chips{display:flex; gap:8px; flex-wrap:wrap;}
+  .chip{display:flex; align-items:center; gap:6px; padding:7px 13px; border:1px solid var(--line); border-radius:999px; cursor:pointer; font-size:12.5px; user-select:none;}
+  .chip input{width:auto; margin:0;}
+  .chip.checked{border-color:var(--ink); background:var(--ink); color:var(--paper);}
+
+  .empty{padding:40px 20px; text-align:center; color:var(--ink-soft); font-size:13.5px; border:1px dashed var(--line); border-radius:var(--radius);}
+  .msg{padding:11px 14px; border-radius:7px; font-size:13px; margin-bottom:14px;}
+  .msg.ok{background:#E5F0E6; color:#2F5C34;}
+  .msg.err{background:#FBE6E5; color:var(--danger);}
+
+  .var-chip{display:inline-flex; align-items:center; gap:8px; padding:7px 8px 7px 14px; border:1px solid var(--line); border-radius:999px; font-size:13px; background:var(--paper-dim);}
+  .var-chip button{background:none; border:none; color:var(--ink-soft); cursor:pointer; font-size:13px; width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex:none;}
+  .var-chip button:hover{background:var(--danger); color:#fff;}
+  .var-list{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px;}
+  .var-add{display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end;}
+  .var-add input{flex:1; min-width:160px;}
+
+  .search-box{position:relative;}
+  .search-box .search-icon{position:absolute; left:11px; top:50%; transform:translateY(-50%); font-size:13px; opacity:.55; pointer-events:none;}
+  .search-box input{padding-left:32px;}
+  .model-list{border:1px solid var(--line); border-radius:8px; overflow:hidden;}
+  .model-list-head, .model-list-row{display:grid; grid-template-columns:1.4fr 0.9fr 0.8fr 0.8fr 0.8fr 1fr auto; gap:10px; align-items:center; padding:9px 12px;}
+  .model-list-head{background:var(--paper-dim); font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-soft); font-weight:600;}
+  .model-list-row{border-top:1px solid var(--line); font-size:13px;}
+  .model-list-row:hover{background:var(--paper-dim);}
+  @media (max-width:560px){
+    .model-list-head{display:none;}
+    .model-list-row{grid-template-columns:1fr auto; row-gap:4px;}
+  }
+
+  .tag-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(170px,1fr)); gap:22px; margin-top:18px;}
+  .hangtag{background:var(--card); border:1px solid var(--line); border-radius:8px; padding:12px; position:relative; transform:rotate(var(--r,-1deg)); box-shadow:0 3px 8px rgba(26,26,26,.06);}
+  .hangtag:nth-child(3n){--r:1deg;}
+  .hangtag:nth-child(3n+1){--r:-1.4deg;}
+  .hangtag::before{content:''; position:absolute; top:-8px; left:50%; transform:translateX(-50%); width:14px; height:14px; border-radius:50%; background:var(--paper); border:2px solid var(--line);}
+  .hangtag img{width:100%; aspect-ratio:1; object-fit:cover; border-radius:5px; background:var(--paper-dim);}
+  .hangtag .ph-empty{width:100%; aspect-ratio:1; border-radius:5px; background:var(--paper-dim); display:flex; align-items:center; justify-content:center; color:var(--ink-soft); font-size:11px; text-align:center; padding:8px;}
+  .hangtag .name{font-family:'IBM Plex Mono', monospace; font-size:12px; margin-top:8px; font-weight:600;}
+
+  #loading{padding:60px 0; text-align:center; color:var(--ink-soft); font-size:13.5px;}
+  .hint{font-size:12px; color:var(--ink-soft); margin-top:8px;}
+  .divider{height:1px; background:var(--line); margin:22px 0;}
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="topbar">
+    <div class="brand">
+      <img class="logo" alt="Piu Kalma" src="data:image/png;base64,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">
+      <div>
+        <h1>Stock</h1>
+        <div class="sub">Modelo · Color · Talle · Temporada · Locación</div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button data-tab="inventario" class="active">Inventario</button>
+    <button data-tab="variables">Variables</button>
+    <button data-tab="transferir">Transferir</button>
+    <button data-tab="catalogo">Catálogo</button>
+  </nav>
+
+  <div id="loading">Cargando stock…</div>
+
+  <main id="main-content" style="display:none;">
+
+    <!-- ================= INVENTARIO ================= -->
+    <section class="panel active" data-panel="inventario">
+      <nav class="subtabs">
+        <button data-sub="inv-ver" class="active">Ver stock</button>
+        <button data-sub="inv-manual">Carga manual</button>
+        <button data-sub="inv-masiva">Carga masiva (Excel)</button>
+        <button data-sub="inv-descarga">Descargar Excel</button>
+      </nav>
+
+      <div class="subpanel active" data-subpanel="inv-ver">
+        <div class="card">
+          <div class="toolbar">
+            <div class="field"><label>Modelo</label><select id="f-modelo"><option value="">Todos</option></select></div>
+            <div class="field"><label>Tipo</label><select id="f-tipo"><option value="">Todos</option></select></div>
+            <div class="field"><label>Color</label><select id="f-color"><option value="">Todos</option></select></div>
+            <div class="field"><label>Talle</label><select id="f-talle"><option value="">Todos</option></select></div>
+            <div class="field"><label>Locación</label><select id="f-loc"><option value="">Todas</option></select></div>
+            <div class="field"><label>Temporada</label><select id="f-temp"><option value="">Todas</option></select></div>
+            <div class="field"><label>Subtemporada</label><select id="f-subtemp"><option value="">Todas</option></select></div>
+          </div>
+          <label style="margin-bottom:8px;">Agrupar por</label>
+          <div class="chips" id="group-chips">
+            <label class="chip" data-dim="modelo"><input type="checkbox">Modelo</label>
+            <label class="chip" data-dim="tipo"><input type="checkbox">Tipo</label>
+            <label class="chip" data-dim="color"><input type="checkbox">Color</label>
+            <label class="chip" data-dim="talle"><input type="checkbox">Talle</label>
+            <label class="chip" data-dim="locacion"><input type="checkbox">Locación</label>
+            <label class="chip" data-dim="temporada"><input type="checkbox">Temporada</label>
+            <label class="chip" data-dim="subtemporada"><input type="checkbox">Subtemporada</label>
+          </div>
+          <p class="hint">Sin selección, se muestra el detalle línea por línea. Combiná varias para ver totales cruzados (ej: Talle + Locación).</p>
+          <div class="divider"></div>
+          <div id="inventory-table"></div>
+        </div>
+      </div>
+
+      <div class="subpanel" data-subpanel="inv-manual">
+        <div class="card" style="max-width:560px;">
+          <h3 style="font-size:19px; margin-bottom:16px;">Cargar stock manualmente</h3>
+          <p class="hint" style="margin-top:0; margin-bottom:16px;">Los valores salen de lo cargado en <b>Variables</b>. La temporada se completa sola según el modelo que elijas: se define una sola vez, al crear el modelo.</p>
+
+          <div class="field">
+            <label>Código de producto (opcional)</label>
+            <div style="display:flex; gap:8px;">
+              <input type="text" id="a-codigo" placeholder="Escaneá o escribí el código..." style="flex:1;">
+              <button class="secondary" type="button" id="btn-buscar-codigo">Buscar</button>
+              <button class="secondary" type="button" id="btn-escanear">📷 Escanear</button>
+            </div>
+            <p class="hint" id="a-codigo-hint" style="margin-top:6px;">Si el modelo tiene un código cargado en Variables, esto completa el modelo (y su temporada/subtemporada) automáticamente.</p>
+          </div>
+
+          <div id="scanner-overlay" style="display:none; position:fixed; inset:0; z-index:1000; background:rgba(26,26,26,.92); align-items:center; justify-content:center; flex-direction:column; padding:20px;">
+            <div style="background:var(--paper); border-radius:12px; padding:16px; max-width:420px; width:100%;">
+              <h3 style="font-size:16px; margin-bottom:10px;">Escaneá el código de producto</h3>
+              <div id="scanner-view" style="width:100%; border-radius:8px; overflow:hidden; background:#000; min-height:220px;"></div>
+              <p id="scanner-status" class="hint" style="margin-top:10px;">Apuntá la cámara al código de barras o QR.</p>
+              <button class="secondary" type="button" id="btn-cerrar-scanner" style="margin-top:6px; width:100%;">Cancelar</button>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+          <div id="add-msg"></div>
+          <div id="form-add">
+            <div class="grid2">
+              <div class="field"><label>Modelo</label><select id="a-modelo"><option value="">Elegí…</option></select></div>
+              <div class="field"><label>Color</label><select id="a-color"><option value="">Elegí…</option></select></div>
+            </div>
+            <div class="field" id="a-temporada-box" style="display:none;">
+              <label>Tipo / Temporada / Subtemporada (del modelo elegido)</label>
+              <input type="text" id="a-temporada-display" disabled>
+            </div>
+            <div class="grid2">
+              <div class="field"><label>Talle</label><select id="a-talle"><option value="">Elegí…</option></select></div>
+              <div class="field"><label>Locación</label><select id="a-locacion"><option value="">Elegí…</option></select></div>
+            </div>
+            <div class="field"><label>Cantidad</label><input type="number" min="1" id="a-cantidad" value="1"></div>
+            <button class="primary" type="button" id="btn-guardar-stock">Guardar en stock</button>
+          </div>
+          <div class="divider"></div>
+          <h3 style="font-size:15px; margin-bottom:10px;">Últimas cargas</h3>
+          <div id="recent-loads"></div>
+        </div>
+      </div>
+
+      <div class="subpanel" data-subpanel="inv-masiva">
+        <div class="card" style="max-width:560px;">
+          <h3 style="font-size:17px;">Carga masiva</h3>
+          <p class="hint" style="margin-top:6px;">Subí un .xlsx con columnas: <span class="mono">modelo, tipo, color, talle, temporada, subtemporada, locacion, cantidad, codigo</span>. Las columnas <b>tipo</b>, <b>subtemporada</b> y <b>codigo</b> son opcionales: dejá tipo vacío si no categorizás por tipo de prenda, y subtemporada vacía si esa temporada no se divide en drops/subtemporadas. Si el modelo ya existe con ese código, no hace falta repetirlo; si es nuevo, esta es la forma de cargarle su código de producto de una. Las filas se suman al stock existente. Si un modelo no existía con esa temporada (y subtemporada), se crea solo en Variables.</p>
+          <div class="field" style="margin-top:14px;"><input type="file" accept=".xlsx,.xls" id="excel-file"></div>
+          <button class="secondary" id="btn-template" type="button">Descargar planilla modelo</button>
+          <div id="excel-msg" style="margin-top:14px;"></div>
+        </div>
+      </div>
+
+      <div class="subpanel" data-subpanel="inv-descarga">
+        <div class="card" style="max-width:640px;">
+          <h3 style="font-size:17px;">Descarga masiva</h3>
+          <p class="hint" style="margin-top:6px;">Exportá el stock actual a Excel en formato matriz: una fila por combinación de las variables elegidas, con los talles como columnas.</p>
+          <label style="margin:14px 0 8px; display:block; font-weight:600; font-size:13px;">Variables a incluir como columnas</label>
+          <div class="chips" id="export-col-chips">
+            <label class="chip"><input type="checkbox" value="modelo" checked>Modelo</label>
+            <label class="chip"><input type="checkbox" value="tipo" checked>Tipo</label>
+            <label class="chip"><input type="checkbox" value="color" checked>Color</label>
+            <label class="chip"><input type="checkbox" value="temporada" checked>Temporada</label>
+            <label class="chip"><input type="checkbox" value="subtemporada" checked>Subtemporada</label>
+            <label class="chip"><input type="checkbox" value="locacion" checked>Locación</label>
+          </div>
+          <p class="hint" style="margin:8px 0 0;">El talle siempre se muestra como columnas (una por cada talle), con el total por fila y por columna al final.</p>
+          <div id="export-col-msg" style="margin-top:10px;"></div>
+          <button class="primary" id="btn-export" type="button" style="margin-top:10px;">Descargar stock actual (.xlsx)</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= VARIABLES ================= -->
+    <section class="panel" data-panel="variables">
+      <nav class="subtabs">
+        <button data-sub="var-modelos" class="active">Modelos</button>
+        <button data-sub="var-tipos">Tipos</button>
+        <button data-sub="var-colores">Colores</button>
+        <button data-sub="var-talles">Talles</button>
+        <button data-sub="var-locaciones">Locaciones</button>
+        <button data-sub="var-temporadas">Temporadas</button>
+        <button data-sub="var-fotos">Fotos (modelo × color)</button>
+      </nav>
+
+      <div class="subpanel active" data-subpanel="var-modelos"><div class="card" id="modelos-card"></div></div>
+      <div class="subpanel" data-subpanel="var-tipos"><div class="card" data-var-card="tipos"></div></div>
+      <div class="subpanel" data-subpanel="var-colores"><div class="card" data-var-card="colores"></div></div>
+      <div class="subpanel" data-subpanel="var-talles"><div class="card" data-var-card="talles"></div></div>
+      <div class="subpanel" data-subpanel="var-locaciones"><div class="card" data-var-card="locaciones"></div></div>
+      <div class="subpanel" data-subpanel="var-temporadas"><div class="card" id="temporadas-card"></div></div>
+
+      <div class="subpanel" data-subpanel="var-fotos">
+        <div class="card">
+          <h3 style="font-size:19px; margin-bottom:6px;">Fotos por combinación de modelo y color</h3>
+          <p class="hint" style="margin-top:0;">Elegí un modelo y un color para ver o subir sus fotos (podés cargar más de una). Se comparten entre todos los talles y locaciones de esa combinación, y son las que se usan en el Catálogo.</p>
+          <div class="grid2" style="margin-top:16px; max-width:480px;">
+            <div class="field"><label>Modelo</label><select id="pf-modelo"><option value="">Elegí…</option></select></div>
+            <div class="field"><label>Color</label><select id="pf-color"><option value="">Elegí…</option></select></div>
+          </div>
+          <div id="pf-current" style="max-width:480px;"></div>
+          <div class="divider"></div>
+          <h3 style="font-size:15px; margin-bottom:12px;">Todas las combinaciones con foto</h3>
+          <div id="photo-gallery" class="tag-grid"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TRANSFERIR ================= -->
+    <section class="panel" data-panel="transferir">
+      <div class="card" style="max-width:560px;">
+        <h3 style="font-size:19px; margin-bottom:16px;">Transferir entre locaciones</h3>
+        <p class="hint" style="margin-top:0; margin-bottom:16px;">Elegí el modelo, color, talle y temporada a mover, la locación de origen y a dónde va.</p>
+        <div id="transfer-msg"></div>
+        <div id="form-transfer">
+          <div class="field">
+            <label>Ítem en stock (modelo · color · talle · temporada — locación origen)</label>
+            <div class="combo-wrap">
+              <input type="text" id="t-item-search" placeholder="Escribí para buscar…" autocomplete="off">
+              <input type="hidden" id="t-item">
+              <div class="combo-options" id="t-item-options" style="display:none;"></div>
+            </div>
+          </div>
+          <div class="field"><label id="t-disp-label">Disponible</label></div>
+          <div class="grid2">
+            <div class="field"><label>Locación destino</label><select id="t-destino"><option value="">Elegí…</option></select></div>
+            <div class="field">
+              <label>Cantidad a transferir</label>
+              <input type="number" min="1" id="t-cantidad">
+              <label class="chip" style="margin-top:8px; width:fit-content;"><input type="checkbox" id="t-todo">Transferir todo lo disponible</label>
+            </div>
+          </div>
+          <button class="primary" type="button" id="btn-transferir">Transferir</button>
+        </div>
+      </div>
+
+      <div class="card" style="max-width:820px; margin-top:20px;">
+        <h3 style="font-size:19px; margin-bottom:6px;">¿Qué falta traer?</h3>
+        <p class="hint" style="margin-top:0; margin-bottom:16px;">Elegí dos locaciones y vas a ver los modelos (con su color y talle) que tienen stock en una pero no en la otra.</p>
+        <div class="grid2">
+          <div class="field"><label>Locación con stock</label><select id="fal-origen"><option value="">Elegí…</option></select></div>
+          <div class="field"><label>Locación a completar</label><select id="fal-destino"><option value="">Elegí…</option></select></div>
+        </div>
+        <div style="display:flex; gap:10px; align-items:center; margin-bottom:6px;">
+          <button class="secondary" type="button" id="btn-invertir-faltantes">↕ Invertir</button>
+        </div>
+        <div id="faltantes-result" style="margin-top:10px;"></div>
+      </div>
+    </section>
+
+    <!-- ================= CATÁLOGO ================= -->
+    <section class="panel" data-panel="catalogo">
+      <div class="card" style="max-width:960px;">
+        <h3 style="font-size:19px; margin-bottom:6px;">Catálogo para mandar por Instagram</h3>
+        <p class="hint" style="margin-top:0; margin-bottom:16px;">Filtrá por talle (y color o locación si querés) y te armamos las tarjetas con foto, precio y stock disponible, listas para compartir.</p>
+        <div class="toolbar" style="margin-bottom:6px;">
+          <div class="field"><label>Talle</label><select id="cat-talle"><option value="">Todos</option></select></div>
+          <div class="field"><label>Tipo</label><select id="cat-tipo"><option value="">Todos</option></select></div>
+          <div class="field"><label>Color</label><select id="cat-color"><option value="">Todos</option></select></div>
+          <div class="field"><label>Locación</label><select id="cat-loc"><option value="">Todas</option></select></div>
+          <div class="field"><label>Temporada</label><select id="cat-temp"><option value="">Todas</option></select></div>
+        </div>
+        <div id="catalogo-grid"></div>
+      </div>
+    </section>
+
+    </main>
+
+  <div id="confirm-modal" style="display:none; position:fixed; inset:0; z-index:1100; background:rgba(26,26,26,.55); align-items:center; justify-content:center; padding:20px;">
+    <div style="background:var(--card); border-radius:12px; padding:22px; max-width:380px; width:100%; box-shadow:0 12px 30px rgba(26,26,26,.25);">
+      <h3 style="font-size:17px; margin-bottom:10px;">¿Confirmás?</h3>
+      <p id="confirm-modal-text" style="font-size:13.5px; color:var(--ink-soft); margin:0 0 20px; line-height:1.5;"></p>
+      <div style="display:flex; gap:10px; justify-content:flex-end;">
+        <button class="secondary" type="button" id="confirm-modal-no">Cancelar</button>
+        <button class="primary" type="button" id="confirm-modal-yes" style="background:var(--danger);">Sí, borrar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="model-edit-modal" style="display:none; position:fixed; inset:0; z-index:1100; background:rgba(26,26,26,.7); align-items:center; justify-content:center; padding:20px;">
+    <div style="background:var(--card); border-radius:12px; padding:20px; max-width:420px; width:100%; box-shadow:0 12px 30px rgba(26,26,26,.25);">
+      <h3 style="font-size:17px; margin-bottom:14px;">Editar modelo</h3>
+      <div class="field"><label>Nombre del modelo</label><input type="text" id="me-nombre"></div>
+      <div class="grid2">
+        <div class="field"><label>Tipo (opcional)</label><select id="me-tipo"><option value="">— Sin tipo —</option></select></div>
+        <div class="field"><label>Temporada</label><select id="me-temporada"></select></div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label>Subtemporada (opcional)</label><select id="me-subtemporada" disabled><option value="">— Sin subtemporada —</option></select></div>
+        <div class="field"><label>Precio (opcional)</label><input type="number" min="0" step="any" placeholder="ej: 15000" id="me-precio"></div>
+      </div>
+      <div class="field"><label>Código de producto (opcional)</label><input type="text" placeholder="ej: 7791234567890" id="me-codigo"></div>
+      <p class="hint" id="me-cascade-hint" style="display:none;"></p>
+      <div id="model-edit-msg"></div>
+      <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:6px;">
+        <button class="secondary" type="button" id="me-cancel">Cancelar</button>
+        <button class="primary" type="button" id="me-save">Guardar cambios</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="photo-modal" style="display:none; position:fixed; inset:0; z-index:1100; background:rgba(26,26,26,.7); align-items:center; justify-content:center; padding:20px;">
+    <div style="background:var(--card); border-radius:12px; padding:18px; max-width:340px; width:100%; box-shadow:0 12px 30px rgba(26,26,26,.25); text-align:center;">
+      <h3 id="photo-modal-title" style="font-size:16px; margin-bottom:12px;"></h3>
+      <div class="photo-wrap" style="max-width:260px; margin:0 auto;">
+        <img id="photo-modal-img" style="width:100%; aspect-ratio:1; object-fit:cover; border-radius:8px; background:var(--paper-dim);">
+        <button class="photo-nav prev" id="photo-modal-prev" style="display:none;">‹</button>
+        <button class="photo-nav next" id="photo-modal-next" style="display:none;">›</button>
+        <span class="more-badge" id="photo-modal-count" style="display:none;"></span>
+      </div>
+      <p id="photo-modal-empty" class="hint" style="display:none; margin:10px 0;">Todavía no cargaste fotos para este modelo y color (Variables → Fotos).</p>
+      <button class="secondary" type="button" id="photo-modal-close" style="margin-top:16px;">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+// ===================== Firebase (reemplaza el guardado de Claude) =====================
+// 1) Creá un proyecto en https://console.firebase.google.com
+// 2) Activá Firestore Database y, en Authentication > Sign-in method, el proveedor "Anonymous".
+// (Las fotos se guardan comprimidas directamente en Firestore, no se usa Storage ni se necesita plan de pago.)
+// 3) Pegá acá abajo la config de tu proyecto (Configuración del proyecto > tus apps > SDK setup and configuration).
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getFirestore, doc, getDoc, setDoc, deleteDoc,
+  onSnapshot as fsOnSnapshot, collection, getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "REEMPLAZAR",
+  authDomain: "REEMPLAZAR.firebaseapp.com",
+  projectId: "REEMPLAZAR",
+  storageBucket: "REEMPLAZAR.appspot.com",
+  messagingSenderId: "REEMPLAZAR",
+  appId: "REEMPLAZAR"
+};
+
+let fbApp = null, fsDb = null, fbAuth = null, firebaseReady = false;
+try{
+  fbApp = initializeApp(firebaseConfig);
+  fsDb = getFirestore(fbApp);
+  fbAuth = getAuth(fbApp);
+  firebaseReady = true;
+}catch(e){ console.error('No se pudo inicializar Firebase. Revisá firebaseConfig en index.html.', e); }
+
+// Adaptador: le da a Firestore la misma forma mínima (doc/collection con get/set/delete/onSnapshot)
+// que ya usa el resto de la app, para no tener que tocar la lógica de abajo.
+function wrapDocRef(ref){
+  return {
+    async get(){
+      const snap = await getDoc(ref);
+      return { exists: snap.exists(), data: () => snap.data() };
+    },
+    async set(data){ return setDoc(ref, data); },
+    async delete(){ return deleteDoc(ref); },
+    onSnapshot(onNext, onError){
+      return fsOnSnapshot(ref, snap=>{
+        onNext({ exists: snap.exists(), data: () => snap.data() });
+      }, onError);
+    },
+    collection(name){ return wrapCollectionRef(collection(ref, name)); }
+  };
+}
+function wrapCollectionRef(ref){
+  return {
+    doc(id){ return wrapDocRef(doc(ref, id)); },
+    async get(){
+      const snap = await getDocs(ref);
+      return { docs: snap.docs.map(d => ({ id: d.id, data: () => d.data() })) };
+    }
+  };
+}
+
+(function(){
+  const $ = (sel, ctx) => (ctx||document).querySelector(sel);
+  const $$ = (sel, ctx) => Array.from((ctx||document).querySelectorAll(sel));
+
+  function showFatalError(msg){
+    let banner = document.getElementById('fatal-error-banner');
+    if(!banner){
+      banner = document.createElement('div');
+      banner.id = 'fatal-error-banner';
+      banner.style.cssText = 'position:sticky;top:0;z-index:9999;background:#C25450;color:#fff;padding:12px 16px;font-family:sans-serif;font-size:13px;';
+      document.body.prepend(banner);
+    }
+    banner.textContent = 'Hubo un error en la página: ' + msg;
+  }
+  window.addEventListener('error', (e)=> showFatalError(e.message || String(e)));
+  window.addEventListener('unhandledrejection', (e)=> showFatalError((e.reason && e.reason.message) || String(e.reason)));
+
+  let items = [];     // {id, modelo, color, talle, temporada, locacion, cantidad}
+  let editingStockId = null; // id of the stock line currently being edited inline in Ver stock
+  let expandedGroupKeys = new Set(); // claves de grupo abiertas en la vista agrupada de Ver stock
+  let recentLoads = []; // últimas cargas manuales: {modelo,color,talle,temporada,subtemporada,locacion,cantidad,ts}
+  // catalog.modelos: [{id, nombre, temporada}]  -- temporada is fixed at model creation
+  let catalog = {modelos:[], colores:[], talles:[], locaciones:[], temporadas:[], tipos:[]};
+  let photoCache = {}; // photoKey -> {modelo,color,dataUrl} or null
+
+  const SIMPLE_FIELD_TO_CATALOG = {color:'colores', talle:'talles', locacion:'locaciones', tipo:'tipos'};
+
+  function sanitize(s){ return String(s||'').trim().replace(/\s+/g,'_').toUpperCase(); }
+  function photoKey(modelo,color){ return 'photo:'+sanitize(modelo)+'::'+sanitize(color); }
+  function itemKeyFields(it){ return [it.modelo,it.color,it.talle,it.temporada,it.subtemporada,it.locacion].map(v=>String(v||'').trim().toLowerCase()).join('|'); }
+  function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function formatPrecio(p){ return (p===''||p===undefined||p===null) ? '' : '$ ' + Number(p).toLocaleString('es-AR'); }
+  function uid(prefix){ return (prefix||'id')+'_' + Math.random().toString(36).slice(2,10); }
+
+  // Orden fijo para agrupar/ordenar el stock: Modelo, Color, Talle (numérico), Temporada, Locación.
+  const FIELD_PRIORITY = ['modelo','tipo','talle','color','temporada','subtemporada','locacion'];
+  function compareTalle(a, b){
+    const sa = String(a||'').trim(), sb = String(b||'').trim();
+    const na = parseInt(sa,10), nb = parseInt(sb,10);
+    const aIsNum = /^\d+$/.test(sa), bIsNum = /^\d+$/.test(sb);
+    if(aIsNum && bIsNum) return na - nb;
+    if(aIsNum && !bIsNum) return -1;
+    if(!aIsNum && bIsNum) return 1;
+    return sa.localeCompare(sb, 'es', {sensitivity:'base'});
+  }
+  function compareByField(a, b, field){
+    if(field === 'talle') return compareTalle(a, b);
+    return String(a||'').localeCompare(String(b||''), 'es', {sensitivity:'base'});
+  }
+  function compareByFields(objA, objB, fields){
+    const orderedFields = FIELD_PRIORITY.filter(f=>fields.includes(f));
+    for(const f of orderedFields){
+      const c = compareByField(objA[f], objB[f], f);
+      if(c !== 0) return c;
+    }
+    return 0;
+  }
+
+  function showConfirmModal(message, onConfirm){
+    const modal = $('#confirm-modal');
+    $('#confirm-modal-text').textContent = message;
+    modal.style.display = 'flex';
+    const yesBtn = $('#confirm-modal-yes');
+    const noBtn = $('#confirm-modal-no');
+    const cleanup = ()=>{ modal.style.display = 'none'; yesBtn.onclick = null; noBtn.onclick = null; };
+    yesBtn.onclick = async ()=>{ cleanup(); await onConfirm(); };
+    noBtn.onclick = ()=> cleanup();
+  }
+
+  // ---------- Fotos: se guardan comprimidas como data URL directo en Firestore (sin Storage) ----------
+  // Firestore tiene un límite de ~1 MiB por documento, así que achicamos y recomprimimos
+  // cada foto antes de guardarla. Esto implica menos calidad/tamaño que una Storage real,
+  // pero no requiere plan de pago ni tarjeta.
+  function compressImageToDataURL(file, maxDim = 700, quality = 0.65){
+    return new Promise((resolve, reject)=>{
+      const img = new Image();
+      const objectUrl = URL.createObjectURL(file);
+      img.onload = ()=>{
+        try{
+          let { width, height } = img;
+          if(width > maxDim || height > maxDim){
+            if(width >= height){ height = Math.round(height * (maxDim / width)); width = maxDim; }
+            else { width = Math.round(width * (maxDim / height)); height = maxDim; }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = width; canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          URL.revokeObjectURL(objectUrl);
+          let q = quality;
+          let dataUrl = canvas.toDataURL('image/jpeg', q);
+          // Si todavía pesa mucho (por el límite de Firestore), bajamos calidad progresivamente.
+          while(dataUrl.length > 180000 && q > 0.25){
+            q -= 0.1;
+            dataUrl = canvas.toDataURL('image/jpeg', q);
+          }
+          resolve(dataUrl);
+        }catch(err){ URL.revokeObjectURL(objectUrl); reject(err); }
+      };
+      img.onerror = (err)=>{ URL.revokeObjectURL(objectUrl); reject(err); };
+      img.src = objectUrl;
+    });
+  }
+
+  // ---------- Persistencia (Firebase: Firestore compartida entre todos los que abren la página) ----------
+  let dbApi = null, assetsApi = null, downloadsApi = null, appDocRef = null;
+
+  async function initRuntime(){
+    dbApi = null; assetsApi = null; downloadsApi = null; appDocRef = null;
+    if(!firebaseReady) return;
+    try{
+      await new Promise((resolve)=>{
+        const unsub = onAuthStateChanged(fbAuth, user=>{ if(user){ unsub(); resolve(); } });
+        signInAnonymously(fbAuth).catch(()=> resolve());
+      });
+      dbApi = true;
+      appDocRef = wrapDocRef(doc(fsDb, 'appdata', 'shared'));
+      assetsApi = {
+        async upload(file){
+          const url = await compressImageToDataURL(file);
+          const id = `${Date.now()}_${Math.random().toString(36).slice(2)}`;
+          return { id, url };
+        }
+      };
+      // downloadsApi queda null a propósito: fuera del sandbox de Claude, XLSX.writeFile ya descarga directo.
+    } catch(e){ console.error('No se pudo conectar con Firebase', e); appDocRef = null; }
+  }
+
+  async function loadAppData(){
+    if(!appDocRef){ items = []; catalog = {modelos:[],colores:[],talles:[],locaciones:[],temporadas:[],tipos:[]}; return; }
+    let data = {};
+    try{ const snap = await appDocRef.get(); data = snap.exists ? (snap.data() || {}) : {}; }
+    catch(e){ console.error('No se pudo leer los datos guardados', e); }
+    items = data.items ? JSON.parse(data.items) : [];
+    items.forEach(it=>{ if(it.subtemporada === undefined) it.subtemporada = ''; if(it.tipo === undefined) it.tipo = ''; });
+    catalog = data.catalog ? Object.assign({modelos:[],colores:[],talles:[],locaciones:[],temporadas:[],tipos:[]}, JSON.parse(data.catalog)) : {modelos:[],colores:[],talles:[],locaciones:[],temporadas:[],tipos:[]};
+    // migrate old format where temporadas was a flat array of strings
+    if(catalog.temporadas.length && typeof catalog.temporadas[0] === 'string'){
+      catalog.temporadas = catalog.temporadas.map(nombre => ({nombre, subtemporadas: []}));
+    }
+    // migrate old format where modelos was a flat array of strings
+    if(catalog.modelos.length && typeof catalog.modelos[0] === 'string'){
+      catalog.modelos = catalog.modelos.map(nombre => ({id: uid('mdl'), nombre, temporada: (catalog.temporadas[0] && catalog.temporadas[0].nombre) || ''}));
+    }
+    // asegurar que todo modelo tenga el campo subtemporada (aunque esté vacío)
+    catalog.modelos.forEach(m=>{ if(m.subtemporada === undefined) m.subtemporada = ''; if(m.precio === undefined) m.precio = ''; if(m.tipo === undefined) m.tipo = ''; });
+    recentLoads = data.recentLoads ? JSON.parse(data.recentLoads) : [];
+  }
+
+  async function persistAppData(){
+    if(!appDocRef) return;
+    try{ await appDocRef.set({ items: JSON.stringify(items), catalog: JSON.stringify(catalog), recentLoads: JSON.stringify(recentLoads) }); }
+    catch(e){ console.error('No se pudo guardar', e); }
+  }
+  async function saveStock(){ await persistAppData(); }
+  async function saveCatalog(){ await persistAppData(); }
+
+  function temporadaNames(){ return catalog.temporadas.map(t=>t.nombre); }
+  function findTemporada(nombre){ return catalog.temporadas.find(t=>t.nombre===nombre) || null; }
+  function subtemporadasOf(temporadaNombre){ const t = findTemporada(temporadaNombre); return t ? t.subtemporadas : []; }
+  function allSubtemporadaNames(){ return Array.from(new Set(catalog.temporadas.flatMap(t=>t.subtemporadas))).sort((a,b)=>a.localeCompare(b,'es')); }
+
+  function addTemporada(nombre){
+    nombre = String(nombre||'').trim();
+    if(!nombre) return false;
+    if(catalog.temporadas.some(t=>t.nombre.toLowerCase()===nombre.toLowerCase())) return false;
+    catalog.temporadas.push({nombre, subtemporadas:[]});
+    catalog.temporadas.sort((a,b)=>a.nombre.localeCompare(b.nombre,'es'));
+    return true;
+  }
+  function removeTemporadaByName(nombre){
+    catalog.temporadas = catalog.temporadas.filter(t=>t.nombre!==nombre);
+  }
+  function addSubtemporada(temporadaNombre, subNombre){
+    subNombre = String(subNombre||'').trim();
+    const t = findTemporada(temporadaNombre);
+    if(!t || !subNombre) return false;
+    if(t.subtemporadas.some(s=>s.toLowerCase()===subNombre.toLowerCase())) return false;
+    t.subtemporadas.push(subNombre);
+    t.subtemporadas.sort((a,b)=>a.localeCompare(b,'es'));
+    return true;
+  }
+  function removeSubtemporada(temporadaNombre, subNombre){
+    const t = findTemporada(temporadaNombre);
+    if(!t) return;
+    t.subtemporadas = t.subtemporadas.filter(s=>s!==subNombre);
+  }
+
+  function addToCatalog(listName, value){
+    value = String(value||'').trim();
+    if(!value) return false;
+    const exists = catalog[listName].some(v=>v.toLowerCase() === value.toLowerCase());
+    if(exists) return false;
+    catalog[listName].push(value);
+    catalog[listName].sort((a,b)=>a.localeCompare(b));
+    return true;
+  }
+
+  function addModel(nombre, temporada, subtemporada, codigo, precio, tipo){
+    nombre = String(nombre||'').trim(); temporada = String(temporada||'').trim();
+    subtemporada = String(subtemporada||'').trim(); codigo = String(codigo||'').trim(); tipo = String(tipo||'').trim();
+    precio = precio===undefined || precio===null || precio==='' ? '' : Math.max(0, Number(precio)||0);
+    if(!nombre || !temporada) return false;
+    const existing = catalog.modelos.find(m=>m.nombre.toLowerCase()===nombre.toLowerCase() && m.temporada.toLowerCase()===temporada.toLowerCase() && (m.subtemporada||'').toLowerCase()===subtemporada.toLowerCase());
+    if(existing){
+      if(codigo && !existing.codigo){
+        if(catalog.modelos.some(m=>m.codigo && m.codigo.toLowerCase()===codigo.toLowerCase())) return 'codigo-duplicado';
+        existing.codigo = codigo;
+        return 'codigo-completado';
+      }
+      return false;
+    }
+    if(codigo && catalog.modelos.some(m=>m.codigo && m.codigo.toLowerCase()===codigo.toLowerCase())) return 'codigo-duplicado';
+    catalog.modelos.push({id: uid('mdl'), nombre, temporada, subtemporada, codigo, precio, tipo});
+    catalog.modelos.sort((a,b)=> a.nombre.localeCompare(b.nombre) || a.temporada.localeCompare(b.temporada) || (a.subtemporada||'').localeCompare(b.subtemporada||''));
+    return true;
+  }
+
+  function findModelByCodigo(codigo){
+    codigo = String(codigo||'').trim().toLowerCase();
+    if(!codigo) return null;
+    return catalog.modelos.find(m=>m.codigo && m.codigo.toLowerCase()===codigo) || null;
+  }
+
+  function uniqueModelNames(){ return Array.from(new Set(catalog.modelos.map(m=>m.nombre))).sort((a,b)=>a.localeCompare(b)); }
+
+  function uniqueValuesFromItems(field){
+    return Array.from(new Set(items.map(it=>it[field]).filter(Boolean))).sort((a,b)=>a.localeCompare(b));
+  }
+
+  async function migrateCatalogFromItemsIfEmpty(){
+    const isEmpty = Object.values(catalog).every(arr=>arr.length===0);
+    if(!isEmpty || items.length===0) return;
+    Object.entries(SIMPLE_FIELD_TO_CATALOG).forEach(([field,listName])=>{
+      uniqueValuesFromItems(field).forEach(v=>addToCatalog(listName,v));
+    });
+    uniqueValuesFromItems('temporada').forEach(v=>addTemporada(v));
+    items.forEach(it=>{ if(it.temporada && it.subtemporada) addSubtemporada(it.temporada, it.subtemporada); });
+    const seen = new Set();
+    items.forEach(it=>{
+      const key = (it.modelo||'').toLowerCase()+'||'+(it.temporada||'').toLowerCase()+'||'+(it.subtemporada||'').toLowerCase();
+      if(it.modelo && it.temporada && !seen.has(key)){ addModel(it.modelo, it.temporada, it.subtemporada||''); seen.add(key); }
+    });
+    await saveCatalog();
+  }
+
+  function fillSelectsFromCatalog(){
+    const aModelo = $('#a-modelo');
+    const currentModeloId = aModelo.value;
+    aModelo.innerHTML = '<option value="">Elegí…</option>' + catalog.modelos.map(m=>`<option value="${m.id}">${escapeHtml(m.nombre)} (${escapeHtml(m.temporada)}${m.subtemporada ? ' · '+escapeHtml(m.subtemporada) : ''})</option>`).join('');
+    if(catalog.modelos.some(m=>m.id===currentModeloId)) aModelo.value = currentModeloId;
+    updateTemporadaDisplay();
+
+    const map = {'a-color':'colores','a-talle':'talles','a-locacion':'locaciones'};
+    Object.entries(map).forEach(([id,listName])=>{
+      const el = document.getElementById(id);
+      const current = el.value;
+      el.innerHTML = '<option value="">Elegí…</option>' + catalog[listName].map(v=>`<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');
+      if(catalog[listName].includes(current)) el.value = current;
+    });
+    refreshDestinoOptions();
+
+    const pfModelo = $('#pf-modelo');
+    const curPf = pfModelo.value;
+    pfModelo.innerHTML = '<option value="">Elegí…</option>' + uniqueModelNames().map(n=>`<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('');
+    if(uniqueModelNames().includes(curPf)) pfModelo.value = curPf;
+    const pfColor = $('#pf-color');
+    const curPfC = pfColor.value;
+    pfColor.innerHTML = '<option value="">Elegí…</option>' + catalog.colores.map(v=>`<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');
+    if(catalog.colores.includes(curPfC)) pfColor.value = curPfC;
+
+    $('#f-modelo').innerHTML = '<option value="">Todos</option>' + uniqueModelNames().map(n=>`<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('');
+    $('#f-tipo').innerHTML = '<option value="">Todos</option>' + catalog.tipos.map(v=>`<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');
+    $('#f-color').innerHTML = '<option value="">Todos</option>' + catalog.colores.map(v=>`<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');
+    $('#f-talle').innerHTML = '<option value="">Todos</option>' + catalog.talles.map(v=>`<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');
+
+    const fLoc = $('#f-loc'), fTemp = $('#f-temp');
+    fLoc.innerHTML = '<option value="">Todas</option>' + catalog.locaciones.map(v=>`<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');
+    const currentFTemp = fTemp.value;
+    fTemp.innerHTML = '<option value="">Todas</option>' + temporadaNames().map(v=>`<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');
+    if(temporadaNames().includes(currentFTemp)) fTemp.value = currentFTemp;
+    fillSubtempFilter();
+  }
+
+  function fillSubtempFilter(){
+    const fTemp = $('#f-temp'), fSubtemp = $('#f-subtemp');
+    const current = fSubtemp.value;
+    const opciones = fTemp.value ? subtemporadasOf(fTemp.value) : allSubtemporadaNames();
+    fSubtemp.innerHTML = '<option value="">Todas</option>' + opciones.map(v=>`<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');
+    if(opciones.includes(current)) fSubtemp.value = current;
+  }
+  $('#f-temp').addEventListener('change', ()=>{ fillSubtempFilter(); renderInventoryTable(); });
+
+  function updateTemporadaDisplay(){
+    const model = catalog.modelos.find(m=>m.id === $('#a-modelo').value);
+    const box = $('#a-temporada-box');
+    if(model){ box.style.display='block'; $('#a-temporada-display').value = (model.tipo ? model.tipo+' — ' : '') + model.temporada + (model.subtemporada ? ' · '+model.subtemporada : ''); }
+    else { box.style.display='none'; $('#a-temporada-display').value=''; }
+  }
+  $('#a-modelo').addEventListener('change', updateTemporadaDisplay);
+
+  // ---------- Código de producto: búsqueda manual + escaneo por cámara ----------
+  function applyModelFromCodigo(codigo){
+    const hint = $('#a-codigo-hint');
+    const model = findModelByCodigo(codigo);
+    if(!model){
+      hint.innerHTML = `<span style="color:var(--danger);">No se encontró ningún modelo con el código "${escapeHtml(codigo)}". Podés cargarlo en Variables → Modelos, o elegir el modelo manualmente abajo.</span>`;
+      return false;
+    }
+    $('#a-modelo').value = model.id;
+    updateTemporadaDisplay();
+    hint.innerHTML = `<span style="color:var(--sage);">Modelo encontrado: <b>${escapeHtml(model.nombre)}</b> (${escapeHtml(model.temporada)}${model.subtemporada ? ' · '+escapeHtml(model.subtemporada) : ''}). Ahora elegí color y talle.</span>`;
+    $('#a-color').focus();
+    return true;
+  }
+
+  $('#btn-buscar-codigo').addEventListener('click', ()=>{
+    const codigo = $('#a-codigo').value.trim();
+    if(!codigo){ $('#a-codigo-hint').innerHTML = '<span style="color:var(--danger);">Escribí o escaneá un código primero.</span>'; return; }
+    applyModelFromCodigo(codigo);
+  });
+  $('#a-codigo').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); $('#btn-buscar-codigo').click(); } });
+
+  let html5QrCode = null;
+  async function openScanner(){
+    const overlay = $('#scanner-overlay');
+    const status = $('#scanner-status');
+    overlay.style.display = 'flex';
+    status.textContent = 'Iniciando cámara…';
+    if(typeof Html5Qrcode === 'undefined'){
+      status.innerHTML = '<span style="color:#ffb3b0;">No se pudo cargar el lector de códigos. Escribí el código manualmente.</span>';
+      return;
+    }
+    try{
+      html5QrCode = new Html5Qrcode('scanner-view');
+      await html5QrCode.start(
+        { facingMode: 'environment' },
+        { fps: 10, qrbox: { width: 240, height: 140 } },
+        (decodedText)=>{
+          $('#a-codigo').value = decodedText;
+          closeScanner();
+          applyModelFromCodigo(decodedText);
+        },
+        ()=>{ /* frame sin código detectado, ignorar */ }
+      );
+      status.textContent = 'Apuntá la cámara al código de barras o QR.';
+    }catch(err){
+      status.innerHTML = `<span style="color:#ffb3b0;">No se pudo acceder a la cámara (${escapeHtml(err.message||String(err))}). Puede que este entorno no dé permiso, o que la página no esté en HTTPS. Escribí el código manualmente.</span>`;
+    }
+  }
+  async function closeScanner(){
+    const overlay = $('#scanner-overlay');
+    overlay.style.display = 'none';
+    if(html5QrCode){
+      try{ await html5QrCode.stop(); await html5QrCode.clear(); }catch(e){}
+      html5QrCode = null;
+    }
+  }
+  $('#btn-escanear').addEventListener('click', openScanner);
+  $('#btn-cerrar-scanner').addEventListener('click', closeScanner);
+
+  // ---------- Inventory table ----------
+  function getActiveGroupDims(){ return $$('#group-chips .chip').filter(c=>c.classList.contains('checked')).map(c=>c.dataset.dim); }
+  function badgeClass(dim){ return {talle:'talle', color:'color', locacion:'loc', temporada:'temp', subtemporada:'subtemp', tipo:'tipo', modelo:''}[dim] || ''; }
+
+  function codigoFor(it){
+    const m = catalog.modelos.find(m=>m.nombre===it.modelo && m.temporada===it.temporada && (m.subtemporada||'')===(it.subtemporada||''));
+    return m && m.codigo ? m.codigo : '';
+  }
+
+  function priceForModelo(modeloNombre){
+    const m = catalog.modelos.find(m=>m.nombre===modeloNombre && m.precio!=='' && m.precio!==undefined && m.precio!==null);
+    return m ? m.precio : '';
+  }
+
+  function renderInventoryTable(){
+    const modeloFilter = $('#f-modelo').value;
+    const tipoFilter = $('#f-tipo').value;
+    const colorFilter = $('#f-color').value;
+    const talleFilter = $('#f-talle').value;
+    const locFilter = $('#f-loc').value;
+    const tempFilter = $('#f-temp').value;
+    const subtempFilter = $('#f-subtemp').value;
+    let rows = items.filter(it=>{
+      if(modeloFilter && it.modelo !== modeloFilter) return false;
+      if(tipoFilter && it.tipo !== tipoFilter) return false;
+      if(colorFilter && it.color !== colorFilter) return false;
+      if(talleFilter && it.talle !== talleFilter) return false;
+      if(locFilter && it.locacion !== locFilter) return false;
+      if(tempFilter && it.temporada !== tempFilter) return false;
+      if(subtempFilter && it.subtemporada !== subtempFilter) return false;
+      return true;
+    });
+    const dims = getActiveGroupDims();
+    const container = $('#inventory-table');
+    if(rows.length === 0){ container.innerHTML = '<div class="empty">No hay stock que coincida con estos filtros.</div>'; return; }
+
+    if(dims.length === 0){
+      container.innerHTML = `<table><thead><tr><th>Modelo</th><th>Tipo</th><th>Código</th><th>Color</th><th>Talle</th><th>Temporada</th><th>Subtemporada</th><th>Locación</th><th>Cantidad</th><th></th></tr></thead><tbody>${rows.map(it=>{
+        const isEditing = editingStockId === it.id;
+        const codigo = codigoFor(it);
+        return `
+        <tr data-id="${it.id}">
+          <td>${escapeHtml(it.modelo)}</td>
+          <td>${it.tipo ? `<span class="badge tipo">${escapeHtml(it.tipo)}</span>` : '—'}</td>
+          <td class="mono" style="font-size:12px; color:var(--ink-soft);">${codigo ? escapeHtml(codigo) : '—'}</td>
+          <td><span class="badge color">${escapeHtml(it.color)}</span></td>
+          <td><span class="badge talle">${escapeHtml(it.talle)}</span></td>
+          <td><span class="badge temp">${escapeHtml(it.temporada)}</span></td>
+          <td>${it.subtemporada ? `<span class="badge subtemp">${escapeHtml(it.subtemporada)}</span>` : '—'}</td>
+          <td><span class="badge loc">${escapeHtml(it.locacion)}</span></td>
+          <td class="num-cell">${isEditing
+            ? `<input type="number" min="0" id="edit-cant-input" value="${it.cantidad}" style="width:80px; padding:5px 7px;">`
+            : it.cantidad}</td>
+          <td style="white-space:nowrap;">${isEditing
+            ? `<button class="danger-link" data-save-cant="${it.id}" style="color:var(--sage);">guardar</button> <button class="danger-link" data-cancel-edit="${it.id}">cancelar</button>`
+            : `<button class="danger-link" data-ver-foto-modelo="${escapeHtml(it.modelo)}" data-ver-foto-color="${escapeHtml(it.color)}">ver foto</button> <button class="danger-link" data-edit="${it.id}">editar</button> <button class="danger-link" data-del="${it.id}">borrar</button>`}</td>
+        </tr>${isEditing ? `<tr><td colspan="10" style="padding:0 10px 8px;"><p class="hint" id="edit-cant-err" style="margin:0;">Si ponés 0, la línea se borra.</p></td></tr>` : ''}`;
+      }).join('')}</tbody></table>`;
+
+      bindStockRowActions();
+      return;
+    }
+
+    const allDims = ['modelo','tipo','color','talle','temporada','subtemporada','locacion'];
+    const DETAIL_ORDER = ['talle','color','modelo','tipo','temporada','subtemporada','locacion'];
+    const otherDims = allDims.filter(d=>!dims.includes(d)).sort((a,b)=>DETAIL_ORDER.indexOf(a)-DETAIL_ORDER.indexOf(b));
+
+    const groups = {};
+    rows.forEach(it=>{
+      const key = dims.map(d=>it[d]).join(' / ');
+      if(!groups[key]) groups[key] = {key, dims: dims.map(d=>it[d]), cantidad:0, items:[]};
+      groups[key].cantidad += it.cantidad;
+      groups[key].items.push(it);
+    });
+
+    const groupRows = Object.values(groups).sort((a,b)=>{
+      const keyA = {}; const keyB = {};
+      dims.forEach((d,i)=>{ keyA[d]=a.dims[i]; keyB[d]=b.dims[i]; });
+      return compareByFields(keyA, keyB, dims);
+    });
+    const total = groupRows.reduce((s,g)=>s+g.cantidad,0);
+
+    container.innerHTML = `<table><thead><tr><th style="width:22px;"></th>${dims.map(d=>`<th>${d.charAt(0).toUpperCase()+d.slice(1)}</th>`).join('')}<th>Cantidad</th></tr></thead><tbody>
+      ${groupRows.map((g)=>{
+        const gkey = escapeHtml(g.key);
+        const isOpen = expandedGroupKeys.has(g.key);
+        return `
+        <tr class="group-row" data-group-toggle="${gkey}" style="cursor:pointer;">
+          <td class="group-caret" data-caret="${gkey}" style="color:var(--ink-soft); font-size:11px;">${isOpen ? '▾' : '▸'}</td>
+          ${g.dims.map((v,i)=>`<td>${v ? `<span class="badge ${badgeClass(dims[i])}">${escapeHtml(v)}</span>` : '—'}</td>`).join('')}
+          <td class="num-cell">${g.cantidad}</td>
+        </tr>
+        <tr class="group-detail-row" data-group-detail="${gkey}" style="display:${isOpen ? 'table-row' : 'none'};">
+          <td colspan="${dims.length+2}" style="background:var(--paper-dim); padding:10px 10px 10px 34px;">
+            <table style="margin-top:0;"><thead><tr>${otherDims.map(d=>`<th>${d.charAt(0).toUpperCase()+d.slice(1)}</th>`).join('')}<th>Código</th><th>Cantidad</th><th></th></tr></thead><tbody>
+              ${g.items.sort((a,b)=>compareByFields(a,b,otherDims)).map(it=>{
+                const isEditing = editingStockId === it.id;
+                const codigo = codigoFor(it);
+                return `<tr>${otherDims.map(d=>`<td>${it[d] ? `<span class="badge ${badgeClass(d)}">${escapeHtml(it[d])}</span>` : '—'}</td>`).join('')}
+                  <td class="mono" style="font-size:12px; color:var(--ink-soft);">${codigo ? escapeHtml(codigo) : '—'}</td>
+                  <td class="num-cell">${isEditing
+                    ? `<input type="number" min="0" id="edit-cant-input" value="${it.cantidad}" style="width:80px; padding:5px 7px;">`
+                    : it.cantidad}</td>
+                  <td style="white-space:nowrap;">${isEditing
+                    ? `<button class="danger-link" data-save-cant="${it.id}" style="color:var(--sage);">guardar</button> <button class="danger-link" data-cancel-edit="${it.id}">cancelar</button>`
+                    : `<button class="danger-link" data-ver-foto-modelo="${escapeHtml(it.modelo)}" data-ver-foto-color="${escapeHtml(it.color)}">ver foto</button> <button class="danger-link" data-edit="${it.id}">editar</button> <button class="danger-link" data-del="${it.id}">borrar</button>`}</td>
+                </tr>${isEditing ? `<tr><td colspan="${otherDims.length+3}" style="padding:0 0 6px;"><p class="hint" id="edit-cant-err" style="margin:0;">Si ponés 0, la línea se borra.</p></td></tr>` : ''}`;
+              }).join('')}
+            </tbody></table>
+          </td>
+        </tr>`;
+      }).join('')}
+    </tbody><tfoot><tr><td></td><td colspan="${dims.length}" style="font-weight:600;">Total</td><td class="num-cell" style="font-weight:600;">${total}</td></tr></tfoot></table>`;
+
+    $$('#inventory-table [data-group-toggle]').forEach(row=>{
+      row.addEventListener('click', ()=>{
+        const key = row.dataset.groupToggle;
+        const detail = $(`#inventory-table [data-group-detail="${CSS.escape(key)}"]`);
+        const caret = $(`#inventory-table [data-caret="${CSS.escape(key)}"]`);
+        const isOpen = detail.style.display !== 'none';
+        detail.style.display = isOpen ? 'none' : 'table-row';
+        caret.textContent = isOpen ? '▸' : '▾';
+        if(isOpen) expandedGroupKeys.delete(key); else expandedGroupKeys.add(key);
+      });
+    });
+    bindStockRowActions();
+  }
+
+  function bindStockRowActions(){
+    $$('#inventory-table [data-ver-foto-modelo]').forEach(btn=>{
+      btn.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        openPhotoModal(btn.dataset.verFotoModelo, btn.dataset.verFotoColor);
+      });
+    });
+    $$('#inventory-table [data-del]').forEach(btn=>{
+      btn.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        const it = items.find(i=>i.id===btn.dataset.del);
+        showConfirmModal(`¿Seguro que querés borrar el stock de ${it ? it.modelo+' · '+it.color+' · '+it.talle : 'esta línea'}? No se puede deshacer.`, async ()=>{
+          items = items.filter(i=>i.id !== btn.dataset.del);
+          await saveStock(); renderAll();
+        });
+      });
+    });
+    $$('#inventory-table [data-edit]').forEach(btn=>{
+      btn.addEventListener('click', (e)=>{ e.stopPropagation(); editingStockId = btn.dataset.edit; renderInventoryTable(); });
+    });
+    $$('#inventory-table [data-cancel-edit]').forEach(btn=>{
+      btn.addEventListener('click', (e)=>{ e.stopPropagation(); editingStockId = null; renderInventoryTable(); });
+    });
+    $$('#inventory-table [data-save-cant]').forEach(btn=>{
+      btn.addEventListener('click', async (e)=>{
+        e.stopPropagation();
+        const id = btn.dataset.saveCant;
+        const input = $('#edit-cant-input');
+        const val = Math.round(Number(input.value));
+        const errBox = $('#edit-cant-err');
+        if(input.value === '' || isNaN(val) || val < 0){
+          if(errBox) errBox.innerHTML = '<span style="color:var(--danger);">Ingresá un número válido (0 o mayor).</span>';
+          return;
+        }
+        if(val === 0){
+          items = items.filter(it=>it.id !== id);
+        } else {
+          const it = items.find(i=>i.id===id);
+          if(it) it.cantidad = val;
+        }
+        editingStockId = null;
+        await saveStock(); renderAll();
+      });
+    });
+  }
+
+  function addOrMerge(entry){
+    const norm = {
+      modelo: String(entry.modelo||'').trim(), color: String(entry.color||'').trim(),
+      talle: String(entry.talle||'').trim(), temporada: String(entry.temporada||'').trim(),
+      subtemporada: String(entry.subtemporada||'').trim(), tipo: String(entry.tipo||'').trim(),
+      locacion: String(entry.locacion||'').trim(), cantidad: Math.max(0, Math.round(Number(entry.cantidad)||0))
+    };
+    if(!norm.modelo || !norm.color || !norm.talle || !norm.temporada || !norm.locacion) return false;
+    const key = itemKeyFields(norm);
+    const existing = items.find(it => itemKeyFields(it) === key);
+    if(existing){ existing.cantidad += norm.cantidad; if(!existing.tipo && norm.tipo) existing.tipo = norm.tipo; } else { items.push(Object.assign({id: uid('it')}, norm)); }
+    return true;
+  }
+
+  function findDuplicateItem(entry){
+    const norm = {
+      modelo: String(entry.modelo||'').trim(), color: String(entry.color||'').trim(),
+      talle: String(entry.talle||'').trim(), temporada: String(entry.temporada||'').trim(),
+      subtemporada: String(entry.subtemporada||'').trim(), locacion: String(entry.locacion||'').trim()
+    };
+    const key = itemKeyFields(norm);
+    return items.find(it => itemKeyFields(it) === key) || null;
+  }
+
+  // ---------- Carga manual ----------
+  $('#btn-guardar-stock').addEventListener('click', async ()=>{
+    const msgBox = $('#add-msg');
+    const model = catalog.modelos.find(m=>m.id === $('#a-modelo').value);
+    const color = $('#a-color').value, talle = $('#a-talle').value, locacion = $('#a-locacion').value, cantidad = $('#a-cantidad').value;
+
+    const faltan = [];
+    if(!model) faltan.push('Modelo');
+    if(!color) faltan.push('Color');
+    if(!talle) faltan.push('Talle');
+    if(!locacion) faltan.push('Locación');
+    if(!cantidad || Number(cantidad) <= 0) faltan.push('Cantidad (mayor a 0)');
+
+    if(faltan.length){
+      msgBox.innerHTML = `<div class="msg err">Te falta completar: ${faltan.join(', ')}.</div>`;
+      return;
+    }
+
+    const entry = {modelo:model.nombre, tipo:model.tipo||'', temporada:model.temporada, subtemporada:model.subtemporada||'', color, talle, locacion, cantidad};
+    const dup = findDuplicateItem(entry);
+    if(dup){
+      const etiqueta = model.temporada + (model.subtemporada ? ' · '+model.subtemporada : '');
+      msgBox.innerHTML = `<div class="msg err">Ese artículo ya existe en el stock: ${escapeHtml(model.nombre)} · ${escapeHtml(color)} · ${escapeHtml(talle)} · ${escapeHtml(etiqueta)} · ${escapeHtml(locacion)} (${dup.cantidad} unidad${dup.cantidad===1?'':'es'}). Si necesitás cambiar la cantidad, editalo desde "Ver stock".</div>`;
+      return;
+    }
+    addOrMerge(entry);
+    recentLoads.unshift({modelo:entry.modelo, color:entry.color, talle:entry.talle, temporada:entry.temporada, subtemporada:entry.subtemporada, locacion:entry.locacion, cantidad:Math.round(Number(cantidad)), ts:Date.now()});
+    recentLoads = recentLoads.slice(0,5);
+    await saveStock();
+    msgBox.innerHTML = '<div class="msg ok">Stock guardado.</div>';
+    $('#a-modelo').value=''; $('#a-color').value=''; $('#a-talle').value=''; $('#a-locacion').value=''; $('#a-cantidad').value='1'; $('#a-codigo').value=''; $('#a-codigo-hint').textContent='Si el modelo tiene un código cargado en Variables, esto completa el modelo (y su temporada/subtemporada) automáticamente.';
+    updateTemporadaDisplay();
+    renderAll();
+  });
+
+  function timeAgo(ts){
+    const diffMin = Math.round((Date.now()-ts)/60000);
+    if(diffMin < 1) return 'recién';
+    if(diffMin < 60) return `hace ${diffMin} min`;
+    const diffH = Math.round(diffMin/60);
+    if(diffH < 24) return `hace ${diffH} h`;
+    const diffD = Math.round(diffH/24);
+    return `hace ${diffD} día${diffD===1?'':'s'}`;
+  }
+
+  function renderRecentLoads(){
+    const box = $('#recent-loads');
+    if(!box) return;
+    if(recentLoads.length === 0){ box.innerHTML = '<p class="hint" style="margin:0;">Todavía no cargaste nada en esta sesión.</p>'; return; }
+    box.innerHTML = `<table><thead><tr><th>Modelo</th><th>Color</th><th>Talle</th><th>Temporada</th><th>Subtemporada</th><th>Locación</th><th>Cantidad</th><th></th></tr></thead><tbody>
+      ${recentLoads.map(r=>`
+        <tr>
+          <td>${escapeHtml(r.modelo)}</td>
+          <td><span class="badge color">${escapeHtml(r.color)}</span></td>
+          <td><span class="badge talle">${escapeHtml(r.talle)}</span></td>
+          <td><span class="badge temp">${escapeHtml(r.temporada)}</span></td>
+          <td>${r.subtemporada ? `<span class="badge subtemp">${escapeHtml(r.subtemporada)}</span>` : '—'}</td>
+          <td><span class="badge loc">${escapeHtml(r.locacion)}</span></td>
+          <td class="num-cell">${r.cantidad}</td>
+          <td class="mono" style="font-size:11px; color:var(--ink-soft); white-space:nowrap;">${timeAgo(r.ts)}</td>
+        </tr>`).join('')}
+    </tbody></table>`;
+  }
+
+  function fileToDataUrl(file){
+    return new Promise((resolve,reject)=>{
+      const r = new FileReader(); r.onload = ()=>resolve(r.result); r.onerror = reject; r.readAsDataURL(file);
+    });
+  }
+
+  // ---------- Excel ----------
+  async function saveWorkbook(wb, filename){
+    const arrayBuf = XLSX.write(wb, {type:'array', bookType:'xlsx'});
+    if(downloadsApi){
+      try{ await downloadsApi.save({filename, data: new Blob([arrayBuf], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})}); }
+      catch(e){ console.error('No se pudo descargar el archivo', e); }
+    } else {
+      XLSX.writeFile(wb, filename);
+    }
+  }
+
+  $('#btn-template').addEventListener('click', ()=>{
+    const ws = XLSX.utils.json_to_sheet([{modelo:'Osito Polar', tipo:'Pijama', color:'Celeste', talle:'M', temporada:'Invierno 2026', subtemporada:'Drop 1', locacion:'Depósito Central', cantidad:10, codigo:'7791234567890'}]);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Stock');
+    saveWorkbook(wb, 'planilla-modelo-stock.xlsx');
+  });
+
+  const EXPORT_COL_LABELS = {modelo:'Modelo', tipo:'Tipo', color:'Color', temporada:'Temporada', subtemporada:'Subtemporada', locacion:'Locación'};
+  const EXPORT_COL_ORDER = ['modelo','tipo','temporada','subtemporada','color','locacion'];
+
+  $('#btn-export').addEventListener('click', ()=>{
+    const msgBox = $('#export-col-msg');
+    const checked = $$('#export-col-chips input[type=checkbox]:checked').map(cb=>cb.value);
+    const dims = EXPORT_COL_ORDER.filter(d=>checked.includes(d));
+    if(dims.length === 0){ msgBox.innerHTML = '<div class="msg err">Elegí al menos una variable.</div>'; return; }
+    msgBox.innerHTML = '';
+
+    if(items.length === 0){
+      const ws = XLSX.utils.aoa_to_sheet([dims.map(d=>EXPORT_COL_LABELS[d]).concat(['Total'])]);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Stock');
+      saveWorkbook(wb, `stock-pijamas-${new Date().toISOString().slice(0,10)}.xlsx`);
+      return;
+    }
+
+    const talles = Array.from(new Set(items.map(it=>it.talle))).sort(compareTalle);
+
+    const groups = {};
+    items.forEach(it=>{
+      const key = dims.map(d=>String(it[d]||'')).join('|||');
+      if(!groups[key]){
+        groups[key] = {};
+        dims.forEach(d=>{ groups[key][d] = it[d]||''; });
+        talles.forEach(t=>{ groups[key][t] = 0; });
+        groups[key].__total = 0;
+      }
+      groups[key][it.talle] = (groups[key][it.talle]||0) + it.cantidad;
+      groups[key].__total += it.cantidad;
+    });
+
+    const rowsArr = Object.values(groups).sort((a,b)=>compareByFields(a,b,dims));
+
+    const header = dims.map(d=>EXPORT_COL_LABELS[d]).concat(talles).concat(['Total']);
+    const dataRows = rowsArr.map(g=> dims.map(d=>g[d]).concat(talles.map(t=>g[t])).concat([g.__total]));
+    const totalsRow = ['TOTAL'].concat(dims.slice(1).map(()=>'')).concat(talles.map(t=>rowsArr.reduce((s,g)=>s+g[t],0))).concat([rowsArr.reduce((s,g)=>s+g.__total,0)]);
+
+    const ws = XLSX.utils.aoa_to_sheet([header, ...dataRows, totalsRow]);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Stock');
+    saveWorkbook(wb, `stock-pijamas-${new Date().toISOString().slice(0,10)}.xlsx`);
+  });
+
+  $('#excel-file').addEventListener('change', async ()=>{
+    const file = $('#excel-file').files[0];
+    const msgBox = $('#excel-msg');
+    if(!file) return;
+    try{
+      const buf = await file.arrayBuffer();
+      const wb = XLSX.read(buf, {type:'array'});
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(ws, {defval:''});
+      let added = 0, skipped = 0, newVars = 0;
+      const codigoConflicts = [];
+      rows.forEach(row=>{
+        const norm = {};
+        Object.keys(row).forEach(k=> norm[k.trim().toLowerCase()] = row[k]);
+        const ok = addOrMerge({modelo:norm.modelo, color:norm.color, talle:norm.talle, temporada:norm.temporada, subtemporada:norm.subtemporada, tipo:norm.tipo, locacion:norm.locacion, cantidad:norm.cantidad});
+        if(ok){
+          added++;
+          Object.entries(SIMPLE_FIELD_TO_CATALOG).forEach(([field,listName])=>{ if(addToCatalog(listName, norm[field])) newVars++; });
+          if(!findTemporada(norm.temporada) && addTemporada(norm.temporada)) newVars++;
+          if(norm.subtemporada && addSubtemporada(norm.temporada, norm.subtemporada)) newVars++;
+          const modelResult = addModel(norm.modelo, norm.temporada, norm.subtemporada, norm.codigo, undefined, norm.tipo);
+          if(modelResult === true || modelResult === 'codigo-completado') newVars++;
+          if(modelResult === 'codigo-duplicado'){
+            const owner = findModelByCodigo(norm.codigo);
+            codigoConflicts.push(`código "${escapeHtml(String(norm.codigo))}" (fila de ${escapeHtml(String(norm.modelo))}) ya pertenece a ${owner ? escapeHtml(owner.nombre)+' ('+escapeHtml(owner.temporada)+')' : 'otro modelo'}`);
+          }
+        } else skipped++;
+      });
+      await saveStock(); await saveCatalog();
+      let html = `<div class="msg ok">${added} filas cargadas${skipped?`, ${skipped} filas omitidas por datos incompletos`:''}${newVars?`, ${newVars} valores nuevos agregados a Variables`:''}.</div>`;
+      if(codigoConflicts.length){
+        html += `<div class="msg err" style="margin-top:8px;">Código de producto duplicado — no se asignó en estos casos: ${codigoConflicts.join('; ')}. El stock de esas filas sí se cargó, pero revisá el código en Variables → Modelos.</div>`;
+      }
+      msgBox.innerHTML = html;
+      $('#excel-file').value = '';
+      renderAll();
+    }catch(err){
+      msgBox.innerHTML = '<div class="msg err">No se pudo leer el archivo. Verificá que sea un .xlsx válido con las columnas correctas.</div>';
+    }
+  });
+
+  // ---------- Variables: Modelos (custom, temporada tied to model) ----------
+  let modelosSearchQuery = '';
+
+  function modelComboKey(modelo, temporada, subtemporada){ return [modelo,temporada,subtemporada].map(v=>String(v||'').trim().toLowerCase()).join('|||'); }
+
+  function getOrphanItems(){
+    const modelKeys = new Set(catalog.modelos.map(m=>modelComboKey(m.nombre, m.temporada, m.subtemporada)));
+    return items.filter(it=>!modelKeys.has(modelComboKey(it.modelo, it.temporada, it.subtemporada)));
+  }
+
+  function renderModelosCard(){
+    const card = $('#modelos-card');
+    const noTemporadas = catalog.temporadas.length === 0;
+    const q = modelosSearchQuery.trim().toLowerCase();
+    const filtered = q ? catalog.modelos.filter(m=>m.nombre.toLowerCase().includes(q) || (m.codigo||'').toLowerCase().includes(q) || m.temporada.toLowerCase().includes(q) || (m.subtemporada||'').toLowerCase().includes(q)) : catalog.modelos;
+    const orphans = getOrphanItems();
+    const orphanGroups = {};
+    orphans.forEach(it=>{
+      const key = modelComboKey(it.modelo, it.temporada, it.subtemporada);
+      if(!orphanGroups[key]) orphanGroups[key] = {modelo:it.modelo, temporada:it.temporada, subtemporada:it.subtemporada, cantidad:0, ids:[]};
+      orphanGroups[key].cantidad += it.cantidad;
+      orphanGroups[key].ids.push(it.id);
+    });
+    const orphanRows = Object.values(orphanGroups);
+
+    card.innerHTML = `
+      <h3 style="font-size:19px; margin-bottom:6px;">Modelos</h3>
+      <p class="hint" style="margin-top:0; margin-bottom:14px;">Cada modelo se crea para una temporada puntual (y, si esa temporada tiene subtemporadas cargadas, opcionalmente para una de ellas). Si el mismo diseño vuelve en otra temporada o subtemporada, cargalo de nuevo eligiéndola. El código de producto es opcional: si lo cargás, después vas a poder escanearlo o tipearlo en Carga manual para completar el modelo automáticamente.</p>
+      ${noTemporadas ? '<div class="msg err">Primero cargá al menos una temporada en la pestaña <b>Temporadas</b>.</div>' : ''}
+
+      ${catalog.modelos.length ? `
+      <div class="search-box" style="margin-bottom:14px; max-width:320px;">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="modelos-search" placeholder="Buscar modelo, código o temporada..." value="${escapeHtml(modelosSearchQuery)}">
+      </div>
+      <div class="model-list">
+        <div class="model-list-head">
+          <span>Modelo</span><span>Tipo</span><span>Temporada</span><span>Subtemporada</span><span>Precio</span><span>Código</span><span></span>
+        </div>
+        ${filtered.length ? filtered.map(m=>`
+          <div class="model-list-row">
+            <span>${escapeHtml(m.nombre)}</span>
+            <span>${m.tipo ? `<span class="badge tipo">${escapeHtml(m.tipo)}</span>` : '—'}</span>
+            <span><span class="badge temp">${escapeHtml(m.temporada)}</span></span>
+            <span>${m.subtemporada ? `<span class="badge subtemp">${escapeHtml(m.subtemporada)}</span>` : '—'}</span>
+            <span>${m.precio!=='' ? escapeHtml(formatPrecio(m.precio)) : '—'}</span>
+            <span class="mono" style="font-size:12px; color:var(--ink-soft);">${m.codigo ? escapeHtml(m.codigo) : '—'}</span>
+            <span style="white-space:nowrap;">
+              <button class="danger-link" data-edit-model="${m.id}">editar</button>
+              <button class="danger-link" data-remove-model="${m.id}">quitar</button>
+            </span>
+          </div>`).join('') : '<p class="hint" style="margin:12px 0 0;">No hay modelos que coincidan con la búsqueda.</p>'}
+      </div>
+      ` : '<p class="hint" style="margin:0 0 14px;">Todavía no cargaste ningún modelo.</p>'}
+
+      <div class="var-add" style="margin-top:18px;">
+        <div class="field" style="margin-bottom:0; flex:1;"><label>Nombre del modelo</label><input type="text" placeholder="ej: Osito Polar" id="new-modelo-nombre" ${noTemporadas?'disabled':''}></div>
+        <div class="field" style="margin-bottom:0; flex:1;"><label>Tipo (opcional)</label><select id="new-modelo-tipo" ${noTemporadas?'disabled':''}><option value="">— Sin tipo —</option>${catalog.tipos.map(t=>`<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join('')}</select></div>
+        <div class="field" style="margin-bottom:0; flex:1;"><label>Temporada</label><select id="new-modelo-temporada" ${noTemporadas?'disabled':''}><option value="">Elegí…</option>${catalog.temporadas.map(t=>`<option value="${escapeHtml(t.nombre)}">${escapeHtml(t.nombre)}</option>`).join('')}</select></div>
+        <div class="field" style="margin-bottom:0; flex:1;"><label>Subtemporada (opcional)</label><select id="new-modelo-subtemporada" disabled><option value="">— Sin subtemporada —</option></select></div>
+        <div class="field" style="margin-bottom:0; flex:1;"><label>Precio (opcional)</label><input type="number" min="0" step="any" placeholder="ej: 15000" id="new-modelo-precio" ${noTemporadas?'disabled':''}></div>
+        <div class="field" style="margin-bottom:0; flex:1;"><label>Código de producto (opcional)</label><input type="text" placeholder="ej: 7791234567890" id="new-modelo-codigo" ${noTemporadas?'disabled':''}></div>
+        <button class="secondary" type="button" id="btn-add-modelo" ${noTemporadas?'disabled':''}>Agregar</button>
+      </div>
+      ${catalog.tipos.length===0 ? '<p class="hint" style="margin:4px 0 0;">Tip: cargá algunos tipos (Pijama, Camisón, Remerón…) en la pestaña <b>Tipos</b> para poder elegirlos acá.</p>' : ''}
+      <div id="modelo-add-msg" style="margin-top:10px;"></div>
+
+      ${orphanRows.length ? `
+      <div class="divider"></div>
+      <h3 style="font-size:15px; margin-bottom:6px; color:var(--danger);">Stock sin modelo (${orphanRows.length})</h3>
+      <p class="hint" style="margin-top:0; margin-bottom:10px;">Estas líneas de stock quedaron sueltas (el modelo al que pertenecían ya no está en la lista de arriba, por ejemplo porque se borró antes de que esto se limpiara automáticamente). No aparecen como opción en Carga manual ni en los modelos de arriba.</p>
+      <div class="model-list">
+        <div class="model-list-head" style="grid-template-columns:1.8fr 1fr 1fr 1fr auto;">
+          <span>Modelo</span><span>Temporada</span><span>Subtemporada</span><span>Cantidad</span><span></span>
+        </div>
+        ${orphanRows.map(g=>`
+          <div class="model-list-row" style="grid-template-columns:1.8fr 1fr 1fr 1fr auto;">
+            <span>${escapeHtml(g.modelo)}</span>
+            <span><span class="badge temp">${escapeHtml(g.temporada)}</span></span>
+            <span>${g.subtemporada ? `<span class="badge subtemp">${escapeHtml(g.subtemporada)}</span>` : '—'}</span>
+            <span class="num-cell">${g.cantidad}</span>
+            <button class="danger-link" data-remove-orphan="${escapeHtml(g.ids.join(','))}">borrar</button>
+          </div>`).join('')}
+      </div>
+      <button class="danger-link" id="btn-remove-all-orphans" style="margin-top:10px;">Borrar todo el stock sin modelo (${orphanRows.reduce((s,g)=>s+g.cantidad,0)} unidades)</button>
+      ` : ''}`;
+
+    $('#modelos-search')?.addEventListener('input', (e)=>{ modelosSearchQuery = e.target.value; renderModelosCard(); });
+
+    const subSelect = $('#new-modelo-subtemporada');
+    $('#new-modelo-temporada')?.addEventListener('change', ()=>{
+      const subs = subtemporadasOf($('#new-modelo-temporada').value);
+      if(subs.length){
+        subSelect.disabled = false;
+        subSelect.innerHTML = '<option value="">— Sin subtemporada —</option>' + subs.map(s=>`<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('');
+      } else {
+        subSelect.disabled = true;
+        subSelect.innerHTML = '<option value="">— Sin subtemporada —</option>';
+      }
+    });
+
+    const submit = async ()=>{
+      const msgBox = $('#modelo-add-msg');
+      const nombre = $('#new-modelo-nombre').value.trim();
+      const tipo = $('#new-modelo-tipo').value;
+      const temporada = $('#new-modelo-temporada').value;
+      const subtemporada = $('#new-modelo-subtemporada').value;
+      const codigo = $('#new-modelo-codigo').value.trim();
+      const precio = $('#new-modelo-precio').value;
+      const faltan = [];
+      if(!nombre) faltan.push('Nombre del modelo');
+      if(!temporada) faltan.push('Temporada');
+      if(faltan.length){ msgBox.innerHTML = `<div class="msg err">Te falta completar: ${faltan.join(', ')}.</div>`; return; }
+      const result = addModel(nombre, temporada, subtemporada, codigo, precio, tipo);
+      if(result === true){ await saveCatalog(); renderModelosCard(); fillSelectsFromCatalog(); }
+      else if(result === 'codigo-duplicado'){ msgBox.innerHTML = '<div class="msg err">Ese código de producto ya está asignado a otro modelo.</div>'; }
+      else { msgBox.innerHTML = '<div class="msg err">Ese modelo ya existe para esa temporada / subtemporada.</div>'; }
+    };
+    $('#btn-add-modelo')?.addEventListener('click', submit);
+    $('#new-modelo-nombre')?.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); submit(); } });
+
+    $$('[data-edit-model]', card).forEach(btn=>{
+      btn.addEventListener('click', ()=> openModelEditModal(btn.dataset.editModel));
+    });
+
+    $$('[data-remove-model]', card).forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const model = catalog.modelos.find(m=>m.id===btn.dataset.removeModel);
+        if(!model) return;
+        const matching = items.filter(it=>it.modelo===model.nombre && it.temporada===model.temporada && (it.subtemporada||'')===(model.subtemporada||''));
+        const unidades = matching.reduce((s,it)=>s+it.cantidad,0);
+        const warn = matching.length>0 ? ` Esto también va a borrar ${matching.length} línea(s) de stock de ese modelo (${unidades} unidad${unidades===1?'':'es'} en total). No se puede deshacer.` : '';
+        const etiqueta = model.temporada + (model.subtemporada ? ' · '+model.subtemporada : '');
+        showConfirmModal(`¿Seguro que querés quitar "${model.nombre}" (${etiqueta})?${warn}`, async ()=>{
+          catalog.modelos = catalog.modelos.filter(m=>m.id!==model.id);
+          items = items.filter(it=>!(it.modelo===model.nombre && it.temporada===model.temporada && (it.subtemporada||'')===(model.subtemporada||'')));
+          await saveCatalog(); await saveStock(); renderAll();
+        });
+      });
+    });
+
+    $$('[data-remove-orphan]', card).forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const ids = btn.dataset.removeOrphan.split(',');
+        const sample = items.find(it=>it.id===ids[0]);
+        const unidades = items.filter(it=>ids.includes(it.id)).reduce((s,it)=>s+it.cantidad,0);
+        showConfirmModal(`¿Seguro que querés borrar este stock sin modelo${sample ? ' ('+sample.modelo+')' : ''} (${unidades} unidad${unidades===1?'':'es'})? No se puede deshacer.`, async ()=>{
+          items = items.filter(it=>!ids.includes(it.id));
+          await saveStock(); renderAll();
+        });
+      });
+    });
+    $('#btn-remove-all-orphans')?.addEventListener('click', ()=>{
+      const orphanIds = getOrphanItems().map(it=>it.id);
+      const unidades = items.filter(it=>orphanIds.includes(it.id)).reduce((s,it)=>s+it.cantidad,0);
+      showConfirmModal(`¿Seguro que querés borrar las ${orphanIds.length} línea(s) de stock sin modelo (${unidades} unidades en total)? No se puede deshacer.`, async ()=>{
+        items = items.filter(it=>!orphanIds.includes(it.id));
+        await saveStock(); renderAll();
+      });
+    });
+  }
+
+  // ---------- Editar modelo existente ----------
+  let editingModelId = null;
+
+  function refreshMeSubtemporadaOptions(preselect){
+    const sub = $('#me-subtemporada');
+    const subs = subtemporadasOf($('#me-temporada').value);
+    if(subs.length){
+      sub.disabled = false;
+      sub.innerHTML = '<option value="">— Sin subtemporada —</option>' + subs.map(s=>`<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('');
+      if(preselect && subs.includes(preselect)) sub.value = preselect;
+    } else {
+      sub.disabled = true;
+      sub.innerHTML = '<option value="">— Sin subtemporada —</option>';
+    }
+  }
+
+  function openModelEditModal(id){
+    const model = catalog.modelos.find(m=>m.id===id);
+    if(!model) return;
+    editingModelId = id;
+    $('#model-edit-msg').innerHTML = '';
+    $('#me-nombre').value = model.nombre;
+    $('#me-tipo').innerHTML = '<option value="">— Sin tipo —</option>' + catalog.tipos.map(t=>`<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join('');
+    $('#me-tipo').value = model.tipo || '';
+    $('#me-temporada').innerHTML = catalog.temporadas.map(t=>`<option value="${escapeHtml(t.nombre)}">${escapeHtml(t.nombre)}</option>`).join('');
+    $('#me-temporada').value = model.temporada;
+    refreshMeSubtemporadaOptions(model.subtemporada);
+    $('#me-codigo').value = model.codigo || '';
+    $('#me-precio').value = model.precio===''? '' : model.precio;
+
+    const usedCount = items.filter(it=>it.modelo===model.nombre && it.temporada===model.temporada && (it.subtemporada||'')===(model.subtemporada||'')).length;
+    const hint = $('#me-cascade-hint');
+    if(usedCount>0){
+      hint.style.display = 'block';
+      hint.textContent = `Este modelo tiene ${usedCount} línea(s) de stock cargadas. Si cambiás el nombre, la temporada o la subtemporada, esas líneas se actualizan solas para seguir apuntando a este modelo.`;
+    } else { hint.style.display = 'none'; }
+
+    $('#model-edit-modal').style.display = 'flex';
+  }
+  function closeModelEditModal(){ $('#model-edit-modal').style.display = 'none'; editingModelId = null; }
+
+  $('#me-temporada').addEventListener('change', ()=> refreshMeSubtemporadaOptions());
+  $('#me-cancel').addEventListener('click', closeModelEditModal);
+  $('#model-edit-modal').addEventListener('click', (e)=>{ if(e.target.id === 'model-edit-modal') closeModelEditModal(); });
+
+  $('#me-save').addEventListener('click', async ()=>{
+    const model = catalog.modelos.find(m=>m.id===editingModelId);
+    const msgBox = $('#model-edit-msg');
+    if(!model) return;
+
+    const nombre = $('#me-nombre').value.trim();
+    const tipo = $('#me-tipo').value;
+    const temporada = $('#me-temporada').value;
+    const subtemporada = $('#me-subtemporada').value;
+    const codigo = $('#me-codigo').value.trim();
+    const precioRaw = $('#me-precio').value;
+    const precio = precioRaw==='' ? '' : Math.max(0, Number(precioRaw)||0);
+
+    const faltan = [];
+    if(!nombre) faltan.push('Nombre del modelo');
+    if(!temporada) faltan.push('Temporada');
+    if(faltan.length){ msgBox.innerHTML = `<div class="msg err">Te falta completar: ${faltan.join(', ')}.</div>`; return; }
+
+    const dup = catalog.modelos.find(m=>m.id!==model.id && m.nombre.toLowerCase()===nombre.toLowerCase() && m.temporada.toLowerCase()===temporada.toLowerCase() && (m.subtemporada||'').toLowerCase()===subtemporada.toLowerCase());
+    if(dup){ msgBox.innerHTML = '<div class="msg err">Ya existe otro modelo con ese nombre, temporada y subtemporada.</div>'; return; }
+
+    if(codigo){
+      const codigoOwner = catalog.modelos.find(m=>m.id!==model.id && m.codigo && m.codigo.toLowerCase()===codigo.toLowerCase());
+      if(codigoOwner){ msgBox.innerHTML = '<div class="msg err">Ese código de producto ya está asignado a otro modelo.</div>'; return; }
+    }
+
+    const oldNombre = model.nombre, oldTemporada = model.temporada, oldSubtemporada = model.subtemporada||'';
+    const identidadCambio = nombre!==oldNombre || temporada!==oldTemporada || subtemporada!==oldSubtemporada;
+
+    model.nombre = nombre; model.tipo = tipo; model.temporada = temporada; model.subtemporada = subtemporada;
+    model.codigo = codigo; model.precio = precio;
+
+    if(identidadCambio){
+      items.forEach(it=>{
+        if(it.modelo===oldNombre && it.temporada===oldTemporada && (it.subtemporada||'')===oldSubtemporada){
+          it.modelo = nombre; it.temporada = temporada; it.subtemporada = subtemporada; it.tipo = tipo;
+        }
+      });
+    } else {
+      // el tipo pudo haber cambiado igual sin tocar la identidad del modelo
+      items.forEach(it=>{
+        if(it.modelo===nombre && it.temporada===temporada && (it.subtemporada||'')===subtemporada) it.tipo = tipo;
+      });
+    }
+
+    catalog.modelos.sort((a,b)=> a.nombre.localeCompare(b.nombre) || a.temporada.localeCompare(b.temporada) || (a.subtemporada||'').localeCompare(b.subtemporada||''));
+    await saveCatalog(); await saveStock();
+    closeModelEditModal();
+    renderAll();
+  });
+
+  // ---------- Variables: listas simples (colores, talles, locaciones, temporadas) ----------
+  const VAR_LABELS = {colores:'Colores', talles:'Talles', locaciones:'Locaciones', tipos:'Tipos'};
+  const VAR_PLACEHOLDER = {colores:'ej: Celeste', talles:'ej: M', locaciones:'ej: Depósito Central', tipos:'ej: Pijama'};
+
+
+  function renderVariableCards(){
+    $$('[data-var-card]').forEach(card=>{
+      const listName = card.dataset.varCard;
+      const values = catalog[listName];
+      card.innerHTML = `
+        <h3 style="font-size:19px; margin-bottom:14px;">${VAR_LABELS[listName]}</h3>
+        <div class="var-list">
+          ${values.length ? values.map(v=>`<span class="var-chip">${escapeHtml(v)}<button data-remove="${escapeHtml(v)}" title="Quitar">✕</button></span>`).join('') : '<p class="hint" style="margin:0;">Todavía no cargaste ninguno.</p>'}
+        </div>
+        <div class="var-add">
+          <input type="text" placeholder="${VAR_PLACEHOLDER[listName]}" data-var-input>
+          <button class="secondary" type="button" data-var-submit>Agregar</button>
+        </div>
+        <div data-var-msg style="margin-top:10px;"></div>`;
+      card.querySelector('[data-var-submit]').addEventListener('click', async ()=>{
+        const input = card.querySelector('[data-var-input]');
+        const msgBox = card.querySelector('[data-var-msg]');
+        if(!input.value.trim()){ msgBox.innerHTML = `<div class="msg err">Te falta completar: ${VAR_LABELS[listName]}.</div>`; return; }
+        if(addToCatalog(listName, input.value)){ await saveCatalog(); input.value=''; renderVariableCards(); fillSelectsFromCatalog(); }
+        else { msgBox.innerHTML = '<div class="msg err">Ese valor ya existe.</div>'; }
+      });
+      card.querySelector('[data-var-input]').addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); card.querySelector('[data-var-submit]').click(); } });
+      $$('[data-remove]', card).forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          const fieldKey = Object.keys(SIMPLE_FIELD_TO_CATALOG).find(f=>SIMPLE_FIELD_TO_CATALOG[f]===listName);
+          const usedCount = items.filter(it=> it[fieldKey] === btn.dataset.remove).length;
+          const warn = usedCount>0 ? ` Ya está usado en ${usedCount} línea(s) de stock; esas líneas no se modifican, pero dejará de aparecer como opción.` : '';
+          showConfirmModal(`¿Seguro que querés quitar "${btn.dataset.remove}" de ${VAR_LABELS[listName]}?${warn}`, async ()=>{
+            catalog[listName] = catalog[listName].filter(v=>v!==btn.dataset.remove);
+            await saveCatalog(); renderVariableCards(); fillSelectsFromCatalog();
+          });
+        });
+      });
+    });
+  }
+
+  // ---------- Variables: Temporadas y subtemporadas ----------
+
+  function renderTemporadasCard(){
+    const card = $('#temporadas-card');
+    if(!card) return;
+    card.innerHTML = `
+      <h3 style="font-size:19px; margin-bottom:6px;">Temporadas</h3>
+      <p class="hint" style="margin-top:0; margin-bottom:16px;">Cada temporada puede dividirse en subtemporadas (drops, lanzamientos, cápsulas) si tu operación lo necesita. Es opcional: una temporada sin subtemporadas funciona igual que antes.</p>
+      ${catalog.temporadas.length ? catalog.temporadas.map(t=>`
+        <div class="card" style="padding:14px 16px; margin-bottom:12px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+            <span class="badge temp" style="font-size:13px;">${escapeHtml(t.nombre)}</span>
+            <button class="danger-link" data-remove-temporada="${escapeHtml(t.nombre)}">quitar temporada</button>
+          </div>
+          <div class="var-list" style="margin-top:12px; margin-bottom:10px;">
+            ${t.subtemporadas.length ? t.subtemporadas.map(s=>`<span class="var-chip"><span class="badge subtemp" style="margin-right:2px;">${escapeHtml(s)}</span><button data-remove-sub="${escapeHtml(s)}" data-temp="${escapeHtml(t.nombre)}" title="Quitar">✕</button></span>`).join('') : '<p class="hint" style="margin:0;">Sin subtemporadas todavía.</p>'}
+          </div>
+          <div class="var-add">
+            <input type="text" placeholder="ej: Drop 1" data-new-sub-input data-temp="${escapeHtml(t.nombre)}">
+            <button class="secondary" type="button" data-add-sub-btn data-temp="${escapeHtml(t.nombre)}">Agregar subtemporada</button>
+          </div>
+          <div data-sub-msg="${escapeHtml(t.nombre)}" style="margin-top:8px;"></div>
+        </div>
+      `).join('') : '<p class="hint" style="margin:0 0 16px;">Todavía no cargaste ninguna temporada.</p>'}
+
+      <div class="var-add" style="margin-top:6px;">
+        <input type="text" placeholder="ej: Invierno 2026" id="new-temporada-input">
+        <button class="secondary" type="button" id="btn-add-temporada">Agregar temporada</button>
+      </div>
+      <div id="temporada-add-msg" style="margin-top:10px;"></div>`;
+
+    $('#btn-add-temporada').addEventListener('click', async ()=>{
+      const input = $('#new-temporada-input');
+      const msgBox = $('#temporada-add-msg');
+      if(!input.value.trim()){ msgBox.innerHTML = '<div class="msg err">Te falta completar: nombre de la temporada.</div>'; return; }
+      if(addTemporada(input.value)){ await saveCatalog(); renderTemporadasCard(); renderModelosCard(); fillSelectsFromCatalog(); }
+      else { msgBox.innerHTML = '<div class="msg err">Esa temporada ya existe.</div>'; }
+    });
+    $('#new-temporada-input').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); $('#btn-add-temporada').click(); } });
+
+    $$('[data-remove-temporada]', card).forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const nombre = btn.dataset.removeTemporada;
+        const usedCount = items.filter(it=>it.temporada===nombre).length;
+        const warn = usedCount>0 ? ` Ya está usada en ${usedCount} línea(s) de stock; esas líneas no se modifican, pero dejará de aparecer como opción.` : '';
+        showConfirmModal(`¿Seguro que querés quitar la temporada "${nombre}" (y sus subtemporadas)?${warn}`, async ()=>{
+          removeTemporadaByName(nombre);
+          await saveCatalog(); renderTemporadasCard(); renderModelosCard(); fillSelectsFromCatalog();
+        });
+      });
+    });
+
+    $$('[data-add-sub-btn]', card).forEach(btn=>{
+      btn.addEventListener('click', async ()=>{
+        const temp = btn.dataset.temp;
+        const input = card.querySelector(`[data-new-sub-input][data-temp="${CSS.escape(temp)}"]`);
+        const msgBox = card.querySelector(`[data-sub-msg="${CSS.escape(temp)}"]`);
+        if(!input.value.trim()){ msgBox.innerHTML = '<div class="msg err">Escribí un nombre de subtemporada.</div>'; return; }
+        if(addSubtemporada(temp, input.value)){ await saveCatalog(); renderTemporadasCard(); renderModelosCard(); fillSelectsFromCatalog(); }
+        else { msgBox.innerHTML = '<div class="msg err">Esa subtemporada ya existe en esta temporada.</div>'; }
+      });
+    });
+    $$('[data-new-sub-input]', card).forEach(input=>{
+      input.addEventListener('keydown', e=>{
+        if(e.key==='Enter'){ e.preventDefault(); card.querySelector(`[data-add-sub-btn][data-temp="${CSS.escape(input.dataset.temp)}"]`).click(); }
+      });
+    });
+    $$('[data-remove-sub]', card).forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const temp = btn.dataset.temp, sub = btn.dataset.removeSub;
+        const usedCount = items.filter(it=>it.temporada===temp && it.subtemporada===sub).length;
+        const warn = usedCount>0 ? ` Ya está usada en ${usedCount} línea(s) de stock; esas líneas no se modifican, pero dejará de aparecer como opción.` : '';
+        showConfirmModal(`¿Seguro que querés quitar la subtemporada "${sub}" de "${temp}"?${warn}`, async ()=>{
+          removeSubtemporada(temp, sub);
+          await saveCatalog(); renderTemporadasCard(); renderModelosCard(); fillSelectsFromCatalog();
+        });
+      });
+    });
+  }
+
+  // ---------- Fotos (varias por combinación de modelo y color) ----------
+  function photosCollection(){ return appDocRef ? appDocRef.collection('photos') : null; }
+
+  async function getPhotosDoc(key){
+    if(!(key in photoCache)){
+      photoCache[key] = null;
+      const col = photosCollection();
+      if(col){ try{ const snap = await col.doc(key).get(); photoCache[key] = snap.exists ? snap.data() : null; } catch(e){ photoCache[key] = null; } }
+    }
+    return photoCache[key];
+  }
+  function photosOf(data){ return data && Array.isArray(data.photos) ? data.photos : (data && data.url ? [{assetId:data.assetId, url:data.url}] : []); }
+
+  let photoModalFotos = [];
+  let photoModalIdx = 0;
+  function renderPhotoModalImg(){
+    const img = $('#photo-modal-img');
+    const empty = $('#photo-modal-empty');
+    const prev = $('#photo-modal-prev'), next = $('#photo-modal-next'), count = $('#photo-modal-count');
+    if(photoModalFotos.length === 0){
+      img.style.display = 'none'; empty.style.display = 'block';
+      prev.style.display = 'none'; next.style.display = 'none'; count.style.display = 'none';
+      return;
+    }
+    img.style.display = 'block'; empty.style.display = 'none';
+    img.src = photoModalFotos[photoModalIdx].url;
+    const varias = photoModalFotos.length > 1;
+    prev.style.display = varias ? 'block' : 'none';
+    next.style.display = varias ? 'block' : 'none';
+    count.style.display = varias ? 'block' : 'none';
+    count.textContent = `${photoModalIdx+1}/${photoModalFotos.length}`;
+  }
+  async function openPhotoModal(modelo, color){
+    const modal = $('#photo-modal');
+    $('#photo-modal-title').textContent = `${modelo} · ${color}`;
+    photoModalFotos = []; photoModalIdx = 0;
+    renderPhotoModalImg();
+    modal.style.display = 'flex';
+    const data = await getPhotosDoc(photoKey(modelo, color));
+    photoModalFotos = photosOf(data);
+    photoModalIdx = 0;
+    renderPhotoModalImg();
+  }
+  $('#photo-modal-prev').addEventListener('click', ()=>{ photoModalIdx = (photoModalIdx - 1 + photoModalFotos.length) % photoModalFotos.length; renderPhotoModalImg(); });
+  $('#photo-modal-next').addEventListener('click', ()=>{ photoModalIdx = (photoModalIdx + 1) % photoModalFotos.length; renderPhotoModalImg(); });
+  $('#photo-modal-close').addEventListener('click', ()=>{ $('#photo-modal').style.display = 'none'; });
+  $('#photo-modal').addEventListener('click', (e)=>{ if(e.target.id === 'photo-modal') $('#photo-modal').style.display = 'none'; });
+
+  let pfReplaceIndex = null;
+
+  async function savePhotosList(key, modelo, color, nuevaLista){
+    const col = photosCollection();
+    if(!col) return;
+    if(nuevaLista.length){ await col.doc(key).set({modelo, color, photos: nuevaLista}); photoCache[key] = {modelo, color, photos: nuevaLista}; }
+    else { await col.doc(key).delete(); photoCache[key] = null; }
+  }
+
+  async function refreshCurrentPhoto(){
+    const modelo = $('#pf-modelo').value, color = $('#pf-color').value;
+    const box = $('#pf-current');
+    if(!modelo || !color){ box.innerHTML=''; return; }
+    const key = photoKey(modelo,color);
+    const data = await getPhotosDoc(key);
+    const fotos = photosOf(data);
+    const canUpload = !!assetsApi;
+    box.innerHTML = `
+      <div style="margin-top:14px;">
+        ${fotos.length ? `<div class="photo-thumbs">${fotos.map((f,i)=>`
+          <div class="thumb">
+            <div class="thumb-img-wrap">
+              <img src="${f.url}">
+              ${i===0 ? '<span class="cover-tag">Portada</span>' : ''}
+            </div>
+            ${canUpload ? `<div class="thumb-actions">
+              <button data-replace-photo="${i}" title="Reemplazar esta foto">🔄</button>
+              ${i!==0 ? `<button data-cover-photo="${i}" title="Poner como portada">⭐</button>` : ''}
+              <button data-del-photo="${i}" title="Borrar">✕</button>
+            </div>` : ''}
+          </div>`).join('')}</div>` : '<div class="ph-empty" style="width:120px;height:120px;">Sin fotos todavía</div>'}
+        <div class="field" style="margin-top:12px;">${canUpload ? '<input type="file" accept="image/*" id="pf-upload"><p class="hint" style="margin:6px 0 0;">Podés subir varias. La primera es la que se muestra en el Catálogo — usá ⭐ para cambiarla.</p><input type="file" accept="image/*" id="pf-replace-input" style="display:none;">' : '<p class="hint" style="margin:0;">Subir fotos no está disponible en esta vista.</p>'}</div>
+      </div>`;
+    $('#pf-upload')?.addEventListener('change', async ()=>{
+      const file = $('#pf-upload').files[0];
+      if(!file || !assetsApi) return;
+      try{
+        const uploaded = await assetsApi.upload(file);
+        const current = await getPhotosDoc(key);
+        const nuevaLista = photosOf(current).concat([{assetId: uploaded.id, url: uploaded.url}]);
+        await savePhotosList(key, modelo, color, nuevaLista);
+        refreshCurrentPhoto();
+        renderPhotoGallery();
+      } catch(e){ console.error('No se pudo subir la foto', e); }
+    });
+    $$('[data-del-photo]', box).forEach(btn=>{
+      btn.addEventListener('click', async ()=>{
+        const idx = Number(btn.dataset.delPhoto);
+        const current = await getPhotosDoc(key);
+        const nuevaLista = photosOf(current).filter((_,i)=>i!==idx);
+        try{ await savePhotosList(key, modelo, color, nuevaLista); refreshCurrentPhoto(); renderPhotoGallery(); }
+        catch(e){ console.error('No se pudo borrar la foto', e); }
+      });
+    });
+    $$('[data-cover-photo]', box).forEach(btn=>{
+      btn.addEventListener('click', async ()=>{
+        const idx = Number(btn.dataset.coverPhoto);
+        const current = await getPhotosDoc(key);
+        const lista = photosOf(current).slice();
+        const [elegida] = lista.splice(idx,1);
+        lista.unshift(elegida);
+        try{ await savePhotosList(key, modelo, color, lista); refreshCurrentPhoto(); renderPhotoGallery(); }
+        catch(e){ console.error('No se pudo cambiar la portada', e); }
+      });
+    });
+    $$('[data-replace-photo]', box).forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        pfReplaceIndex = Number(btn.dataset.replacePhoto);
+        $('#pf-replace-input').click();
+      });
+    });
+    $('#pf-replace-input')?.addEventListener('change', async ()=>{
+      const file = $('#pf-replace-input').files[0];
+      if(!file || !assetsApi || pfReplaceIndex===null) return;
+      try{
+        const uploaded = await assetsApi.upload(file);
+        const current = await getPhotosDoc(key);
+        const lista = photosOf(current).slice();
+        lista[pfReplaceIndex] = {assetId: uploaded.id, url: uploaded.url};
+        await savePhotosList(key, modelo, color, lista);
+        pfReplaceIndex = null;
+        refreshCurrentPhoto();
+        renderPhotoGallery();
+      } catch(e){ console.error('No se pudo reemplazar la foto', e); }
+    });
+  }
+  $('#pf-modelo').addEventListener('change', refreshCurrentPhoto);
+  $('#pf-color').addEventListener('change', refreshCurrentPhoto);
+
+  async function renderPhotoGallery(){
+    const gallery = $('#photo-gallery');
+    const col = photosCollection();
+    if(!col){ gallery.innerHTML = '<div class="empty">Las fotos no están disponibles en esta vista.</div>'; return; }
+    let docs = [];
+    try{ const snap = await col.get(); docs = snap.docs; } catch(e){ docs = []; }
+    if(docs.length===0){ gallery.innerHTML = '<div class="empty">Todavía no subiste ninguna foto.</div>'; return; }
+    gallery.innerHTML = docs.map(d=>{
+      const data = d.data();
+      photoCache[d.id] = data;
+      const fotos = photosOf(data);
+      if(!fotos.length) return '';
+      return `<div class="hangtag"><div class="photo-wrap"><img src="${fotos[0].url}">${fotos.length>1 ? `<span class="more-badge">📷 +${fotos.length-1}</span>` : ''}</div><div class="name">${escapeHtml(data.modelo)} · ${escapeHtml(data.color)}</div></div>`;
+    }).join('');
+  }
+
+  // ---------- Catálogo (para mandar por Instagram) ----------
+  let catPhotoIndex = {}; // key de foto -> índice actualmente mostrado en la tarjeta
+
+  function fillCatalogoSelects(){
+    const talleSel = $('#cat-talle'), colorSel = $('#cat-color'), locSel = $('#cat-loc'), tempSel = $('#cat-temp'), tipoSel = $('#cat-tipo');
+    if(!talleSel) return;
+    const prevT = talleSel.value, prevC = colorSel.value, prevL = locSel.value, prevTemp = tempSel.value, prevTipo = tipoSel.value;
+    const talles = Array.from(new Set(items.map(it=>it.talle))).sort(compareTalle);
+    talleSel.innerHTML = '<option value="">Todos</option>' + talles.map(v=>`<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');
+    colorSel.innerHTML = '<option value="">Todos</option>' + catalog.colores.map(v=>`<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');
+    locSel.innerHTML = '<option value="">Todas</option>' + catalog.locaciones.map(v=>`<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');
+    tempSel.innerHTML = '<option value="">Todas</option>' + temporadaNames().map(v=>`<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');
+    tipoSel.innerHTML = '<option value="">Todos</option>' + catalog.tipos.map(v=>`<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');
+    if(talles.includes(prevT)) talleSel.value = prevT;
+    if(catalog.colores.includes(prevC)) colorSel.value = prevC;
+    if(catalog.locaciones.includes(prevL)) locSel.value = prevL;
+    if(temporadaNames().includes(prevTemp)) tempSel.value = prevTemp;
+    if(catalog.tipos.includes(prevTipo)) tipoSel.value = prevTipo;
+  }
+
+  async function renderCatalogoGrid(){
+    const grid = $('#catalogo-grid');
+    if(!grid) return;
+    const talle = $('#cat-talle').value, color = $('#cat-color').value, loc = $('#cat-loc').value, temp = $('#cat-temp').value, tipo = $('#cat-tipo').value;
+    const filtered = items.filter(it=>{
+      if(it.cantidad<=0) return false;
+      if(talle && it.talle!==talle) return false;
+      if(color && it.color!==color) return false;
+      if(loc && it.locacion!==loc) return false;
+      if(temp && it.temporada!==temp) return false;
+      if(tipo && it.tipo!==tipo) return false;
+      return true;
+    });
+    if(filtered.length===0){ grid.innerHTML = '<div class="empty">No hay stock que coincida con estos filtros.</div>'; return; }
+
+    const groups = {};
+    filtered.forEach(it=>{
+      const key = it.modelo+'|||'+it.color;
+      if(!groups[key]) groups[key] = {modelo:it.modelo, color:it.color, tipo:it.tipo||'', cantidad:0};
+      groups[key].cantidad += it.cantidad;
+    });
+    const rows = Object.values(groups).sort((a,b)=> a.modelo.localeCompare(b.modelo,'es') || a.color.localeCompare(b.color,'es'));
+
+    await Promise.all(rows.map(g=> getPhotosDoc(photoKey(g.modelo, g.color))));
+
+    grid.innerHTML = `<div class="cat-grid">${rows.map(g=>{
+      const key = photoKey(g.modelo, g.color);
+      const fotos = photosOf(photoCache[key]);
+      const idx = fotos.length ? Math.min(catPhotoIndex[key]||0, fotos.length-1) : 0;
+      const precio = priceForModelo(g.modelo);
+      return `<div class="cat-card">
+        <div class="photo-wrap">
+          ${fotos.length ? `<img src="${fotos[idx].url}">` : '<div class="ph-empty">Sin foto cargada<br>(Variables → Fotos)</div>'}
+          ${fotos.length>1 ? `<button class="photo-nav prev" data-nav="-1" data-key="${escapeHtml(key)}">‹</button><button class="photo-nav next" data-nav="1" data-key="${escapeHtml(key)}">›</button><span class="more-badge">${idx+1}/${fotos.length}</span>` : ''}
+        </div>
+        <div class="name">${escapeHtml(g.modelo)} · ${escapeHtml(g.color)}</div>
+        ${g.tipo ? `<span class="badge tipo">${escapeHtml(g.tipo)}</span>` : ''}
+        <div class="price">${precio!=='' ? escapeHtml(formatPrecio(precio)) : 'Sin precio cargado'}</div>
+        ${(talle || temp) ? `<div class="stock-line">${talle?`Talle ${escapeHtml(talle)}`:''}${talle&&temp?' · ':''}${temp?escapeHtml(temp):''}</div>` : ''}
+        <div class="cat-actions">
+          <button class="secondary" type="button" data-share-modelo="${escapeHtml(g.modelo)}" data-share-color="${escapeHtml(g.color)}" ${fotos.length?'':'disabled'}>Compartir</button>
+        </div>
+      </div>`;
+    }).join('')}</div>`;
+
+    $$('[data-nav]', grid).forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const key = btn.dataset.key;
+        const fotos = photosOf(photoCache[key]);
+        const cur = catPhotoIndex[key]||0;
+        let next = cur + Number(btn.dataset.nav);
+        if(next<0) next = fotos.length-1;
+        if(next>=fotos.length) next = 0;
+        catPhotoIndex[key] = next;
+        renderCatalogoGrid();
+      });
+    });
+    $$('[data-share-modelo]', grid).forEach(btn=>{
+      btn.addEventListener('click', ()=> shareCatalogoCard(btn.dataset.shareModelo, btn.dataset.shareColor));
+    });
+  }
+
+  async function shareCatalogoCard(modelo, color){
+    const key = photoKey(modelo, color);
+    const fotos = photosOf(photoCache[key]);
+    if(!fotos.length) return;
+    const idx = Math.min(catPhotoIndex[key]||0, fotos.length-1);
+    const foto = fotos[idx];
+    const precio = priceForModelo(modelo);
+    const texto = `${modelo} · ${color}${precio!=='' ? ' — '+formatPrecio(precio) : ''}`;
+    try{
+      const resp = await fetch(foto.url);
+      const blob = await resp.blob();
+      const file = new File([blob], `${sanitize(modelo)}_${sanitize(color)}.jpg`, {type: blob.type || 'image/jpeg'});
+      if(navigator.canShare && navigator.canShare({files:[file]})){
+        await navigator.share({files:[file], text: texto});
+        return;
+      }
+    } catch(e){ console.error('No se pudo compartir la imagen directamente', e); }
+    // alternativa si el navegador no soporta compartir archivos: abrir la foto para guardarla/compartirla a mano
+    window.open(foto.url, '_blank');
+  }
+
+  ['#cat-talle','#cat-tipo','#cat-color','#cat-loc','#cat-temp'].forEach(sel=>{
+    $(sel)?.addEventListener('change', renderCatalogoGrid);
+  });
+
+  // ---------- Transferir ----------
+  let transferItemOptions = [];
+
+  function itemOptionLabel(it){
+    return `${it.modelo} · ${it.color} · ${it.talle} · ${it.temporada}${it.subtemporada ? ' · '+it.subtemporada : ''} — en ${it.locacion} (${it.cantidad})`;
+  }
+
+  function renderTransferSelect(){
+    transferItemOptions = items.filter(it=>it.cantidad>0)
+      .sort((a,b)=> (a.modelo+a.locacion).localeCompare(b.modelo+b.locacion))
+      .map(it=>({id:it.id, label:itemOptionLabel(it)}));
+    // si el ítem elegido dejó de existir (se transfirió del todo, se borró, etc.), limpiar la selección
+    if($('#t-item').value && !transferItemOptions.some(o=>o.id === $('#t-item').value)){
+      $('#t-item').value=''; $('#t-item-search').value=''; $('#t-disp-label').textContent = 'Disponible';
+    }
+  }
+
+  function renderTransferOptions(query){
+    const box = $('#t-item-options');
+    const q = (query||'').trim().toLowerCase();
+    const matches = q ? transferItemOptions.filter(o=>o.label.toLowerCase().includes(q)) : transferItemOptions;
+    if(matches.length===0){ box.innerHTML = '<div class="combo-empty">Sin resultados.</div>'; }
+    else {
+      box.innerHTML = matches.slice(0,80).map(o=>`<div class="combo-option" data-opt="${o.id}">${escapeHtml(o.label)}</div>`).join('');
+      $$('[data-opt]', box).forEach(el=>{
+        el.addEventListener('mousedown', (e)=>{
+          e.preventDefault(); // evitar que el blur cierre el combo antes del click
+          selectTransferItem(el.dataset.opt);
+        });
+      });
+    }
+    box.style.display = 'block';
+  }
+
+  function selectTransferItem(id){
+    const opt = transferItemOptions.find(o=>o.id===id);
+    $('#t-item').value = id;
+    $('#t-item-search').value = opt ? opt.label : '';
+    $('#t-item-options').style.display = 'none';
+    $('#t-item').dispatchEvent(new Event('change'));
+  }
+
+  $('#t-item-search').addEventListener('input', ()=>{
+    if($('#t-item').value){ $('#t-item').value=''; $('#t-item').dispatchEvent(new Event('change')); }
+    renderTransferOptions($('#t-item-search').value);
+  });
+  $('#t-item-search').addEventListener('focus', ()=> renderTransferOptions($('#t-item-search').value));
+  $('#t-item-search').addEventListener('blur', ()=>{ setTimeout(()=>{ $('#t-item-options').style.display='none'; }, 120); });
+  $('#t-item-search').addEventListener('keydown', (e)=>{
+    if(e.key === 'Escape'){ $('#t-item-options').style.display='none'; $('#t-item-search').blur(); }
+    if(e.key === 'Enter'){
+      e.preventDefault();
+      const q = $('#t-item-search').value.trim().toLowerCase();
+      const first = q ? transferItemOptions.find(o=>o.label.toLowerCase().includes(q)) : transferItemOptions[0];
+      if(first) selectTransferItem(first.id);
+    }
+  });
+
+  function refreshDestinoOptions(){
+    const it = items.find(i=>i.id === $('#t-item').value);
+    const destinoSel = $('#t-destino');
+    const current = destinoSel.value;
+    const opciones = catalog.locaciones.filter(v=> !it || v !== it.locacion);
+    destinoSel.innerHTML = '<option value="">Elegí…</option>' + opciones.map(v=>`<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');
+    if(opciones.includes(current)) destinoSel.value = current;
+  }
+
+  $('#t-item').addEventListener('change', ()=>{
+    const it = items.find(i=>i.id === $('#t-item').value);
+    $('#t-disp-label').textContent = it ? `Disponible: ${it.cantidad} unidades en ${it.locacion}` : 'Disponible';
+    if(it) $('#t-cantidad').max = it.cantidad;
+    refreshDestinoOptions();
+    if($('#t-todo').checked && it) $('#t-cantidad').value = it.cantidad;
+  });
+  $('#t-todo').addEventListener('change', ()=>{
+    const it = items.find(i=>i.id === $('#t-item').value);
+    const marcado = $('#t-todo').checked;
+    $('#t-cantidad').disabled = marcado;
+    if(marcado && it) $('#t-cantidad').value = it.cantidad;
+  });
+  $('#btn-transferir').addEventListener('click', async ()=>{
+    const msgBox = $('#transfer-msg');
+    const it = items.find(i=>i.id === $('#t-item').value);
+    const destino = $('#t-destino').value;
+    const cantRaw = $('#t-todo').checked && it ? String(it.cantidad) : $('#t-cantidad').value;
+    const cant = Math.round(Number(cantRaw));
+
+    const faltan = [];
+    if(!it) faltan.push('Ítem a transferir');
+    if(!destino) faltan.push('Locación destino');
+    if(!cantRaw || cant <= 0) faltan.push('Cantidad (mayor a 0)');
+    if(faltan.length){ msgBox.innerHTML = `<div class="msg err">Te falta completar: ${faltan.join(', ')}.</div>`; return; }
+
+    if(destino.toLowerCase() === it.locacion.toLowerCase()){ msgBox.innerHTML='<div class="msg err">El destino debe ser distinto al origen.</div>'; return; }
+    if(cant > it.cantidad){ msgBox.innerHTML='<div class="msg err">No hay suficiente stock disponible en el origen.</div>'; return; }
+    it.cantidad -= cant;
+    if(it.cantidad <= 0){ items = items.filter(i=>i.id !== it.id); }
+    addOrMerge({modelo:it.modelo, color:it.color, talle:it.talle, temporada:it.temporada, subtemporada:it.subtemporada||'', tipo:it.tipo||'', locacion:destino, cantidad:cant});
+    await saveStock();
+    msgBox.innerHTML = `<div class="msg ok">Transferidas ${cant} unidades a ${escapeHtml(destino)}.</div>`;
+    $('#t-item').value=''; $('#t-item-search').value=''; $('#t-destino').value=''; $('#t-cantidad').value=''; $('#t-cantidad').disabled=false; $('#t-todo').checked=false;
+    $('#t-disp-label').textContent = 'Disponible';
+    renderAll();
+  });
+
+  // ---------- ¿Qué falta traer? (comparar dos locaciones) ----------
+  function comboKeyNoLoc(it){ return [it.modelo,it.color,it.talle,it.temporada,it.subtemporada].map(v=>String(v||'').trim().toLowerCase()).join('|'); }
+
+  function renderFaltantesSelects(){
+    const origenSel = $('#fal-origen'), destinoSel = $('#fal-destino');
+    const prevO = origenSel.value, prevD = destinoSel.value;
+    const opciones = '<option value="">Elegí…</option>' + catalog.locaciones.map(v=>`<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');
+    origenSel.innerHTML = opciones; destinoSel.innerHTML = opciones;
+    if(catalog.locaciones.includes(prevO)) origenSel.value = prevO;
+    if(catalog.locaciones.includes(prevD)) destinoSel.value = prevD;
+  }
+
+  function renderFaltantesTable(){
+    const box = $('#faltantes-result');
+    const origen = $('#fal-origen').value, destino = $('#fal-destino').value;
+    if(!origen || !destino){ box.innerHTML = ''; return; }
+    if(origen === destino){ box.innerHTML = '<p class="hint" style="margin:0;">Elegí dos locaciones distintas.</p>'; return; }
+
+    const combosDestino = new Set();
+    items.forEach(it=>{ if(it.locacion===destino && it.cantidad>0) combosDestino.add(comboKeyNoLoc(it)); });
+
+    const faltantes = items
+      .filter(it=> it.locacion===origen && it.cantidad>0 && !combosDestino.has(comboKeyNoLoc(it)))
+      .sort((a,b)=>compareByFields(a,b, FIELD_PRIORITY));
+
+    if(faltantes.length===0){
+      box.innerHTML = `<p class="hint" style="margin:0;">No hay diferencias: todo lo que hay en <b>${escapeHtml(origen)}</b> ya tiene al menos 1 unidad en <b>${escapeHtml(destino)}</b>.</p>`;
+      return;
+    }
+
+    box.innerHTML = `<p class="hint" style="margin:0 0 10px;">Hay stock en <b>${escapeHtml(origen)}</b> que no existe todavía en <b>${escapeHtml(destino)}</b>:</p>
+      <table><thead><tr><th>Modelo</th><th>Color</th><th>Talle</th><th>Temporada</th><th>Subtemporada</th><th>Disp. en ${escapeHtml(origen)}</th><th></th></tr></thead><tbody>
+        ${faltantes.map(it=>`
+          <tr>
+            <td>${escapeHtml(it.modelo)}</td>
+            <td><span class="badge color">${escapeHtml(it.color)}</span></td>
+            <td><span class="badge talle">${escapeHtml(it.talle)}</span></td>
+            <td><span class="badge temp">${escapeHtml(it.temporada)}</span></td>
+            <td>${it.subtemporada ? `<span class="badge subtemp">${escapeHtml(it.subtemporada)}</span>` : '—'}</td>
+            <td class="num-cell">${it.cantidad}</td>
+            <td><button class="secondary" type="button" data-preparar-transf="${it.id}" data-destino-transf="${escapeHtml(destino)}">Preparar transferencia</button></td>
+          </tr>`).join('')}
+      </tbody></table>`;
+
+    $$('[data-preparar-transf]', box).forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        selectTransferItem(btn.dataset.prepararTransf);
+        $('#t-destino').value = btn.dataset.destinoTransf;
+        $('#t-todo').checked = false;
+        $('#t-cantidad').disabled = false;
+        $('#t-cantidad').value = '';
+        $('#t-cantidad').focus();
+        $('#form-transfer').scrollIntoView({behavior:'smooth', block:'start'});
+      });
+    });
+  }
+  $('#fal-origen').addEventListener('change', renderFaltantesTable);
+  $('#fal-destino').addEventListener('change', renderFaltantesTable);
+  $('#btn-invertir-faltantes').addEventListener('click', ()=>{
+    const o = $('#fal-origen').value, d = $('#fal-destino').value;
+    $('#fal-origen').value = d; $('#fal-destino').value = o;
+    renderFaltantesTable();
+  });
+
+  // ---------- Tabs / subtabs ----------
+  $$('nav.tabs button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      $$('nav.tabs button').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      $$('section.panel').forEach(p=>p.classList.remove('active'));
+      $(`section.panel[data-panel="${btn.dataset.tab}"]`).classList.add('active');
+      if(btn.dataset.tab === 'transferir'){ renderTransferSelect(); renderFaltantesSelects(); renderFaltantesTable(); }
+      if(btn.dataset.tab === 'variables'){ renderModelosCard(); renderVariableCards(); renderTemporadasCard(); }
+      if(btn.dataset.tab === 'catalogo'){ fillCatalogoSelects(); renderCatalogoGrid(); }
+    });
+  });
+  $$('nav.subtabs').forEach(nav=>{
+    $$('button', nav).forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        $$('button', nav).forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        const parentPanel = nav.closest('section.panel');
+        $$('.subpanel', parentPanel).forEach(sp=>sp.classList.remove('active'));
+        $(`.subpanel[data-subpanel="${btn.dataset.sub}"]`, parentPanel).classList.add('active');
+        if(btn.dataset.sub === 'var-fotos') renderPhotoGallery();
+      });
+    });
+  });
+
+  $$('#group-chips .chip').forEach(chip=>{
+    chip.addEventListener('click', (e)=>{
+      e.preventDefault();
+      chip.classList.toggle('checked');
+      chip.querySelector('input').checked = chip.classList.contains('checked');
+      renderInventoryTable();
+    });
+  });
+  $$('#export-col-chips .chip').forEach(chip=>{
+    const input = chip.querySelector('input');
+    if(input.checked) chip.classList.add('checked');
+    chip.addEventListener('click', (e)=>{
+      e.preventDefault();
+      chip.classList.toggle('checked');
+      input.checked = chip.classList.contains('checked');
+    });
+  });
+  ['#f-modelo','#f-tipo','#f-color','#f-talle','#f-loc','#f-subtemp'].forEach(sel=>{
+    $(sel).addEventListener('change', renderInventoryTable);
+  });
+
+  function renderAll(){
+   
+    fillSelectsFromCatalog();
+    renderInventoryTable();
+    renderTransferSelect();
+    renderFaltantesSelects();
+    renderFaltantesTable();
+    renderModelosCard();
+    renderVariableCards();
+    renderTemporadasCard();
+    renderRecentLoads();
+    fillCatalogoSelects();
+    renderCatalogoGrid();
+  }
+
+  async function init(){
+    await initRuntime();
+    await loadAppData();
+    await migrateCatalogFromItemsIfEmpty();
+    renderAll();
+    if(appDocRef){
+      try{
+        appDocRef.onSnapshot(snap=>{
+          if(!snap.exists || editingStockId) return; // no pisar una edición en curso
+          const data = snap.data() || {};
+          items = data.items ? JSON.parse(data.items) : [];
+          items.forEach(it=>{ if(it.subtemporada === undefined) it.subtemporada = ''; if(it.tipo === undefined) it.tipo = ''; });
+          catalog = data.catalog ? Object.assign({modelos:[],colores:[],talles:[],locaciones:[],temporadas:[],tipos:[]}, JSON.parse(data.catalog)) : {modelos:[],colores:[],talles:[],locaciones:[],temporadas:[],tipos:[]};
+          catalog.modelos.forEach(m=>{ if(m.subtemporada === undefined) m.subtemporada = ''; if(m.precio === undefined) m.precio = ''; if(m.tipo === undefined) m.tipo = ''; });
+          recentLoads = data.recentLoads ? JSON.parse(data.recentLoads) : [];
+          renderAll();
+        }, err=>{ console.error('Se cortó la sincronización en tiempo real', err); });
+      } catch(e){ console.error('No se pudo suscribir a cambios en tiempo real', e); }
+    }
+    if(!appDocRef){
+      const warn = document.createElement('div');
+      warn.className = 'msg err';
+      warn.style.margin = '0 0 14px';
+      warn.textContent = 'No se pudo conectar el guardado compartido en esta vista: los cambios no se van a guardar ni se van a ver reflejados para el resto.';
+      $('#main-content').prepend(warn);
+    }
+    $('#loading').style.display = 'none';
+    $('#main-content').style.display = 'block';
+  }
+  init();
+})();
+</script>
+</body>
+</html>
