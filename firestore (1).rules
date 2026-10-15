@@ -1,0 +1,26 @@
+rules_version = '2';
+
+// Reglas para Firestore. Cualquiera que abra la página hace login anónimo
+// automáticamente (ver index.html), así que "estar autenticado" alcanza
+// como control básico: mantiene afuera a cualquiera que no haya abierto
+// la app, pero NO distingue entre las personas que sí la usan (todas
+// comparten el mismo stock, que es justamente lo que se buscaba).
+//
+// Si en algún momento querés que cada persona tenga su propio login
+// (usuario/contraseña o Google) en vez de anónimo, estas mismas reglas
+// siguen sirviendo sin cambios.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Documento único donde vive todo: items, catálogo y últimas cargas.
+    match /appdata/shared {
+      allow read, write: if request.auth != null;
+
+      // Fotos por combinación de modelo y color.
+      match /photos/{photoId} {
+        allow read, write: if request.auth != null;
+      }
+    }
+  }
+}
