@@ -1040,6 +1040,17 @@ function wrapCollectionRef(ref){
     return codigoIdx.get(codigoKey(it.modelo, it.temporada, it.subtemporada)) || '';
   }
 
+  // Orden de la tabla plana (sin agrupar): modelo A→Z y, dentro de cada modelo, color, talle (numérico), temporada, subtemporada y locación.
+  const ES_COLLATOR = new Intl.Collator('es', {sensitivity:'base'});
+  function compareInventoryRows(a, b){
+    return ES_COLLATOR.compare(String(a.modelo||''), String(b.modelo||''))
+      || ES_COLLATOR.compare(String(a.color||''), String(b.color||''))
+      || compareTalle(a.talle, b.talle)
+      || ES_COLLATOR.compare(String(a.temporada||''), String(b.temporada||''))
+      || ES_COLLATOR.compare(String(a.subtemporada||''), String(b.subtemporada||''))
+      || ES_COLLATOR.compare(String(a.locacion||''), String(b.locacion||''));
+  }
+
   const INV_PAGE = 200;      // filas que se dibujan por vez en la tabla plana
   let invShown = INV_PAGE;   // cuántas se están mostrando
   let invSig = '';           // firma de filtros+agrupación: si cambia, vuelve a mostrar solo la primera página
@@ -1076,6 +1087,7 @@ function wrapCollectionRef(ref){
     if(sig !== invSig){ invSig = sig; invShown = INV_PAGE; }
 
     if(dims.length === 0){
+      rows.sort(compareInventoryRows);
       const shownRows = rows.slice(0, invShown);
       const moreHtml = rows.length > shownRows.length
         ? `<div style="text-align:center; margin:14px 0;"><p class="hint" style="margin:0 0 8px;">Mostrando ${shownRows.length} de ${rows.length} líneas.</p><button class="secondary" id="inv-show-more" type="button">Mostrar ${Math.min(INV_PAGE, rows.length - shownRows.length)} más</button></div>`
