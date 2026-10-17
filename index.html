@@ -541,6 +541,9 @@ function wrapCollectionRef(ref){
 
   // Orden fijo para agrupar/ordenar el stock: Modelo, Color, Talle (numérico), Temporada, Locación.
   const FIELD_PRIORITY = ['modelo','tipo','talle','color','temporada','subtemporada','locacion'];
+  // Un solo Collator reutilizado: da el mismo orden que localeCompare('es', base) pero es mucho más rápido
+  // al ordenar miles de líneas.
+  const collatorEs = new Intl.Collator('es', {sensitivity:'base'});
   function compareTalle(a, b){
     const sa = String(a||'').trim(), sb = String(b||'').trim();
     const na = parseInt(sa,10), nb = parseInt(sb,10);
@@ -548,11 +551,11 @@ function wrapCollectionRef(ref){
     if(aIsNum && bIsNum) return na - nb;
     if(aIsNum && !bIsNum) return -1;
     if(!aIsNum && bIsNum) return 1;
-    return sa.localeCompare(sb, 'es', {sensitivity:'base'});
+    return collatorEs.compare(sa, sb);
   }
   function compareByField(a, b, field){
     if(field === 'talle') return compareTalle(a, b);
-    return String(a||'').localeCompare(String(b||''), 'es', {sensitivity:'base'});
+    return collatorEs.compare(String(a||''), String(b||''));
   }
   function compareByFields(objA, objB, fields){
     const orderedFields = FIELD_PRIORITY.filter(f=>fields.includes(f));
@@ -1076,6 +1079,9 @@ function wrapCollectionRef(ref){
     if(sig !== invSig){ invSig = sig; invShown = INV_PAGE; }
 
     if(dims.length === 0){
+      // Orden alfabético por modelo (y después tipo, talle, color, temporada, subtemporada, locación).
+      // Se ordena todo antes de paginar, así "Mostrar más" sigue el mismo orden. `rows` es una copia filtrada: no toca `items`.
+      rows.sort((a,b)=>compareByFields(a, b, FIELD_PRIORITY));
       const shownRows = rows.slice(0, invShown);
       const moreHtml = rows.length > shownRows.length
         ? `<div style="text-align:center; margin:14px 0;"><p class="hint" style="margin:0 0 8px;">Mostrando ${shownRows.length} de ${rows.length} líneas.</p><button class="secondary" id="inv-show-more" type="button">Mostrar ${Math.min(INV_PAGE, rows.length - shownRows.length)} más</button></div>`
