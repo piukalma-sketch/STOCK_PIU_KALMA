@@ -8,8 +8,11 @@
 <meta name="theme-color" content="#F8F6F2">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+<!-- xlsx y html5-qrcode se cargan recién cuando se usan (ver ensureXLSX / openScanner) para no frenar el arranque -->
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js">
+<link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js">
+<link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js">
 <style>
   :root{
     --ink:#1A1A1A; --ink-soft:#5C5A56; --paper:#F8F6F2; --paper-dim:#EEEAE3; --card:#FFFFFF;
@@ -289,6 +292,10 @@
           <p class="hint" style="margin:8px 0 0;">El talle siempre se muestra como columnas (una por cada talle), con el total por fila y por columna al final.</p>
           <div id="export-col-msg" style="margin-top:10px;"></div>
           <button class="primary" id="btn-export" type="button" style="margin-top:10px;">Descargar stock actual (.xlsx)</button>
+          <hr style="border:none; border-top:1px solid var(--line); margin:22px 0 16px;">
+          <h3 style="font-size:15px;">Respaldo completo</h3>
+          <p class="hint" style="margin-top:6px;">Guarda todo el stock, el catálogo y las últimas cargas en un archivo .json (sin fotos). Sirve como copia de seguridad.</p>
+          <button class="secondary" id="btn-backup" type="button" style="margin-top:10px;">Descargar respaldo (.json)</button>
         </div>
       </div>
     </section>
@@ -478,7 +485,11 @@ function wrapDocRef(ref){
     async delete(){ return deleteDoc(ref); },
     onSnapshot(onNext, onError){
       return fsOnSnapshot(ref, snap=>{
-        onNext({ exists: snap.exists(), data: () => snap.data() });
+        onNext({
+          exists: snap.exists(), data: () => snap.data(),
+          hasPendingWrites: snap.metadata.hasPendingWrites, // true = es el eco de nuestro propio guardado
+          fromCache: snap.metadata.fromCache                // true = todavía no confirmó el servidor
+        });
       }, onError);
     },
     collection(name){ return wrapCollectionRef(collection(ref, name)); }
@@ -622,14 +633,88 @@ function wrapCollectionRef(ref){
     } catch(e){ console.error('No se pudo conectar con Firebase', e); appDocRef = null; }
   }
 
-  async function loadAppData(){
-    if(!appDocRef){ items = []; catalog = {modelos:[],colores:[],talles:[],locaciones:[],temporadas:[],tipos:[]}; return; }
-    let data = {};
-    try{ const snap = await appDocRef.get(); data = snap.exists ? (snap.data() || {}) : {}; }
-    catch(e){ console.error('No se pudo leer los datos guardados', e); }
-    items = data.items ? JSON.parse(data.items) : [];
+  // ---------- Carga diferida de librerías pesadas (solo se bajan cuando se usan) ----------
+  const XLSX_URL = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+  const QR_URL = 'https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js';
+  const scriptPromises = {};
+  function loadScript(url){
+    if(!scriptPromises[url]){
+      scriptPromises[url] = new Promise((resolve, reject)=>{
+        const s = document.createElement('script');
+        s.src = url;
+        s.onload = resolve;
+        s.onerror = ()=>{ delete scriptPromises[url]; reject(new Error('No se pudo cargar ' + url)); };
+        document.head.appendChild(s);
+      });
+    }
+    return scriptPromises[url];
+  }
+  async function ensureXLSX(){ if(typeof XLSX === 'undefined') await loadScript(XLSX_URL); }
+
+  // ---------- Avisos fijos arriba de la página (errores de guardado / sincronización) ----------
+  function showSyncBanner(id, msg, color){
+    let el = document.getElementById(id);
+    if(!msg){ if(el) el.remove(); return; }
+    if(!el){
+      el = document.createElement('div');
+      el.id = id;
+      el.style.cssText = 'position:sticky;top:0;z-index:9998;color:#fff;padding:12px 16px;font-family:sans-serif;font-size:13px;';
+      document.body.prepend(el);
+    }
+    el.style.background = color || '#C25450';
+    el.textContent = msg;
+  }
+
+  // ---------- Formato compacto del stock ----------
+  // Antes cada fila se guardaba como objeto con todos sus textos repetidos (~217 bytes por fila), y el
+  // documento de Firestore (límite 1 MiB) se llenaba con ~4.800 filas. Ahora cada texto se guarda una sola
+  // vez y cada fila solo referencia posiciones: entran ~25.000 filas en el mismo documento.
+  const STOCK_DIMS = ['modelo','tipo','color','talle','temporada','subtemporada','locacion'];
+  const STOCK_KNOWN = new Set(STOCK_DIMS.concat(['cantidad','id']));
+
+  function encodeStock(list){
+    const dicts = {}, maps = {};
+    STOCK_DIMS.forEach(d=>{ dicts[d] = []; maps[d] = new Map(); });
+    const rows = list.map(it=>{
+      const row = STOCK_DIMS.map(d=>{
+        const v = String(it[d] === undefined || it[d] === null ? '' : it[d]);
+        let i = maps[d].get(v);
+        if(i === undefined){ i = dicts[d].length; dicts[d].push(v); maps[d].set(v, i); }
+        return i;
+      });
+      row.push(it.cantidad, it.id);
+      // por las dudas: cualquier campo extra de una fila no se pierde
+      let extra = null;
+      Object.keys(it).forEach(k=>{ if(!STOCK_KNOWN.has(k)){ extra = extra || {}; extra[k] = it[k]; } });
+      if(extra) row.push(extra);
+      return row;
+    });
+    return JSON.stringify({v:2, d:dicts, r:rows});
+  }
+
+  function decodeStock(str){
+    const obj = JSON.parse(str);
+    const dicts = obj.d, n = STOCK_DIMS.length;
+    return obj.r.map(row=>{
+      const it = {};
+      STOCK_DIMS.forEach((dim, i)=>{ it[dim] = dicts[dim][row[i]]; });
+      it.cantidad = row[n];
+      it.id = row[n + 1];
+      if(row[n + 2]) Object.assign(it, row[n + 2]);
+      return it;
+    });
+  }
+
+  function emptyCatalog(){ return {modelos:[],colores:[],talles:[],locaciones:[],temporadas:[],tipos:[]}; }
+
+  // Aplica a la memoria lo que vino de Firestore (sirve para la lectura inicial y para los cambios en vivo).
+  // Entiende el formato nuevo (campo "stock") y el viejo (campo "items"), así no se pierde nada al migrar.
+  function applyRemoteData(data){
+    data = data || {};
+    if(data.stock) items = decodeStock(data.stock);
+    else items = data.items ? JSON.parse(data.items) : [];
     items.forEach(it=>{ if(it.subtemporada === undefined) it.subtemporada = ''; if(it.tipo === undefined) it.tipo = ''; });
-    catalog = data.catalog ? Object.assign({modelos:[],colores:[],talles:[],locaciones:[],temporadas:[],tipos:[]}, JSON.parse(data.catalog)) : {modelos:[],colores:[],talles:[],locaciones:[],temporadas:[],tipos:[]};
+    catalog = data.catalog ? Object.assign(emptyCatalog(), JSON.parse(data.catalog)) : emptyCatalog();
     // migrate old format where temporadas was a flat array of strings
     if(catalog.temporadas.length && typeof catalog.temporadas[0] === 'string'){
       catalog.temporadas = catalog.temporadas.map(nombre => ({nombre, subtemporadas: []}));
@@ -643,13 +728,95 @@ function wrapCollectionRef(ref){
     recentLoads = data.recentLoads ? JSON.parse(data.recentLoads) : [];
   }
 
-  async function persistAppData(){
-    if(!appDocRef) return;
-    try{ await appDocRef.set({ items: JSON.stringify(items), catalog: JSON.stringify(catalog), recentLoads: JSON.stringify(recentLoads) }); }
-    catch(e){ console.error('No se pudo guardar', e); }
+  function explainSyncError(e){
+    const code = (e && e.code) || '';
+    const msg = String((e && e.message) || e);
+    if(code === 'permission-denied') return 'Firestore rechazó el acceso por permisos. Revisá las reglas de Firestore y que el inicio de sesión Anónimo esté activado en Firebase Authentication.';
+    if(code === 'invalid-argument' || /exceed|too large|maximum size/i.test(msg)) return 'Los datos ocupan más de lo que permite un documento de Firestore (1 MiB).';
+    if(code === 'unavailable') return 'Sin conexión con Firebase. Revisá tu internet.';
+    return msg;
   }
-  async function saveStock(){ await persistAppData(); }
-  async function saveCatalog(){ await persistAppData(); }
+
+  // Lectura inicial + cambios en vivo con UNA sola suscripción (antes eran una lectura y después otra suscripción
+  // al mismo documento, con dos dibujados completos seguidos). Resuelve cuando llegó el primer dato confirmado.
+  let dataLoaded = false; // true solo después de leer el estado real del servidor: evita pisar el stock si la lectura falló
+  function startSync(){
+    return new Promise(resolve=>{
+      if(!appDocRef){ resolve(); return; }
+      let first = true;
+      const finishFirst = ()=>{ if(first){ first = false; clearTimeout(timer); resolve(); } };
+      const timer = setTimeout(()=>{
+        if(first){
+          showSyncBanner('sync-banner', 'No se pudieron leer los datos guardados (¿sin conexión?). Hasta que se lean no se guarda nada, para no pisar el stock.');
+          finishFirst();
+        }
+      }, 15000);
+      try{
+        appDocRef.onSnapshot(snap=>{
+          if(snap.hasPendingWrites) return;            // eco de nuestro propio guardado: la memoria ya está al día
+          if(snap.fromCache && !snap.exists) return;   // sin conexión y sin copia local: esperar al servidor
+          if(!first && (!snap.exists || editingStockId)) return; // no pisar una edición en curso
+          try{
+            if(snap.exists) applyRemoteData(snap.data() || {});
+            else { items = []; catalog = emptyCatalog(); recentLoads = []; }
+          }catch(e){
+            console.error('Los datos guardados no se pudieron interpretar', e);
+            showSyncBanner('sync-banner', 'Los datos guardados no se pudieron interpretar, así que no se guarda nada. ' + explainSyncError(e));
+            finishFirst();
+            return;
+          }
+          if(snap.fromCache) return;                   // dato local viejo: esperar la confirmación del servidor
+          dataLoaded = true;
+          showSyncBanner('sync-banner', '');
+          if(first) finishFirst(); else renderAll();
+        }, err=>{
+          console.error('Se cortó la sincronización en tiempo real', err);
+          showSyncBanner('sync-banner', 'No se pudieron leer los datos guardados: ' + explainSyncError(err));
+          finishFirst();
+        });
+      }catch(e){
+        console.error('No se pudo suscribir a cambios en tiempo real', e);
+        showSyncBanner('sync-banner', 'No se pudo conectar con el guardado compartido: ' + explainSyncError(e));
+        finishFirst();
+      }
+    });
+  }
+
+  const MAX_DOC_BYTES = 950000; // Firestore corta en ~1 MiB por documento (dejamos margen)
+  function byteLength(s){ return new TextEncoder().encode(s).length; }
+
+  // Devuelve true si se guardó, false si no. Ya no se traga los errores: avisa con un cartel rojo fijo.
+  async function persistAppData(){
+    if(!appDocRef) return false;
+    if(!dataLoaded){
+      showSyncBanner('save-error-banner', 'Los cambios NO se guardaron: todavía no se pudieron leer los datos guardados y, para no pisar el stock, no se escribe nada. Recargá la página.');
+      return false;
+    }
+    let payload;
+    try{
+      payload = { stock: encodeStock(items), catalog: JSON.stringify(catalog), recentLoads: JSON.stringify(recentLoads) };
+    }catch(e){
+      console.error('No se pudo preparar el guardado', e);
+      showSyncBanner('save-error-banner', 'Los cambios NO se guardaron: ' + explainSyncError(e));
+      return false;
+    }
+    const size = byteLength(payload.stock) + byteLength(payload.catalog) + byteLength(payload.recentLoads);
+    if(size > MAX_DOC_BYTES){
+      showSyncBanner('save-error-banner', `Los cambios NO se guardaron: los datos pesan ${(size/1048576).toFixed(2)} MiB y el límite de Firestore es 1 MiB por documento.`);
+      return false;
+    }
+    try{
+      await appDocRef.set(payload);
+      showSyncBanner('save-error-banner', '');
+      return true;
+    }catch(e){
+      console.error('No se pudo guardar', e);
+      showSyncBanner('save-error-banner', 'Los cambios NO se guardaron. ' + explainSyncError(e));
+      return false;
+    }
+  }
+  async function saveStock(){ return persistAppData(); }
+  async function saveCatalog(){ return persistAppData(); }
 
   function temporadaNames(){ return catalog.temporadas.map(t=>t.nombre); }
   function findTemporada(nombre){ return catalog.temporadas.find(t=>t.nombre===nombre) || null; }
@@ -824,6 +991,9 @@ function wrapCollectionRef(ref){
     overlay.style.display = 'flex';
     status.textContent = 'Iniciando cámara…';
     if(typeof Html5Qrcode === 'undefined'){
+      try{ await loadScript(QR_URL); }catch(e){ /* se avisa abajo */ }
+    }
+    if(typeof Html5Qrcode === 'undefined'){
       status.innerHTML = '<span style="color:#ffb3b0;">No se pudo cargar el lector de códigos. Escribí el código manualmente.</span>';
       return;
     }
@@ -859,10 +1029,20 @@ function wrapCollectionRef(ref){
   function getActiveGroupDims(){ return $$('#group-chips .chip').filter(c=>c.classList.contains('checked')).map(c=>c.dataset.dim); }
   function badgeClass(dim){ return {talle:'talle', color:'color', locacion:'loc', temporada:'temp', subtemporada:'subtemp', tipo:'tipo', modelo:''}[dim] || ''; }
 
+  // Índice modelo+temporada+subtemporada -> código, armado una vez por dibujado (antes era una búsqueda lineal por fila).
+  let codigoIdx = null;
+  function codigoKey(nombre, temporada, sub){ return nombre + '\u0001' + temporada + '\u0001' + (sub||''); }
   function codigoFor(it){
-    const m = catalog.modelos.find(m=>m.nombre===it.modelo && m.temporada===it.temporada && (m.subtemporada||'')===(it.subtemporada||''));
-    return m && m.codigo ? m.codigo : '';
+    if(!codigoIdx){
+      codigoIdx = new Map();
+      catalog.modelos.forEach(m=>{ const k = codigoKey(m.nombre, m.temporada, m.subtemporada); if(!codigoIdx.has(k)) codigoIdx.set(k, m.codigo || ''); });
+    }
+    return codigoIdx.get(codigoKey(it.modelo, it.temporada, it.subtemporada)) || '';
   }
+
+  const INV_PAGE = 200;      // filas que se dibujan por vez en la tabla plana
+  let invShown = INV_PAGE;   // cuántas se están mostrando
+  let invSig = '';           // firma de filtros+agrupación: si cambia, vuelve a mostrar solo la primera página
 
   function priceForModelo(modeloNombre){
     const m = catalog.modelos.find(m=>m.nombre===modeloNombre && m.precio!=='' && m.precio!==undefined && m.precio!==null);
@@ -870,6 +1050,7 @@ function wrapCollectionRef(ref){
   }
 
   function renderInventoryTable(){
+    codigoIdx = null;
     const modeloFilter = $('#f-modelo').value;
     const tipoFilter = $('#f-tipo').value;
     const colorFilter = $('#f-color').value;
@@ -891,8 +1072,15 @@ function wrapCollectionRef(ref){
     const container = $('#inventory-table');
     if(rows.length === 0){ container.innerHTML = '<div class="empty">No hay stock que coincida con estos filtros.</div>'; return; }
 
+    const sig = JSON.stringify([modeloFilter, tipoFilter, colorFilter, talleFilter, locFilter, tempFilter, subtempFilter, dims]);
+    if(sig !== invSig){ invSig = sig; invShown = INV_PAGE; }
+
     if(dims.length === 0){
-      container.innerHTML = `<table><thead><tr><th>Modelo</th><th>Tipo</th><th>Código</th><th>Color</th><th>Talle</th><th>Temporada</th><th>Subtemporada</th><th>Locación</th><th>Cantidad</th><th></th></tr></thead><tbody>${rows.map(it=>{
+      const shownRows = rows.slice(0, invShown);
+      const moreHtml = rows.length > shownRows.length
+        ? `<div style="text-align:center; margin:14px 0;"><p class="hint" style="margin:0 0 8px;">Mostrando ${shownRows.length} de ${rows.length} líneas.</p><button class="secondary" id="inv-show-more" type="button">Mostrar ${Math.min(INV_PAGE, rows.length - shownRows.length)} más</button></div>`
+        : '';
+      container.innerHTML = `<table><thead><tr><th>Modelo</th><th>Tipo</th><th>Código</th><th>Color</th><th>Talle</th><th>Temporada</th><th>Subtemporada</th><th>Locación</th><th>Cantidad</th><th></th></tr></thead><tbody>${shownRows.map(it=>{
         const isEditing = editingStockId === it.id;
         const codigo = codigoFor(it);
         return `
@@ -912,8 +1100,10 @@ function wrapCollectionRef(ref){
             ? `<button class="danger-link" data-save-cant="${it.id}" style="color:var(--sage);">guardar</button> <button class="danger-link" data-cancel-edit="${it.id}">cancelar</button>`
             : `<button class="danger-link" data-ver-foto-modelo="${escapeHtml(it.modelo)}" data-ver-foto-color="${escapeHtml(it.color)}">ver foto</button> <button class="danger-link" data-edit="${it.id}">editar</button> <button class="danger-link" data-del="${it.id}">borrar</button>`}</td>
         </tr>${isEditing ? `<tr><td colspan="10" style="padding:0 10px 8px;"><p class="hint" id="edit-cant-err" style="margin:0;">Si ponés 0, la línea se borra.</p></td></tr>` : ''}`;
-      }).join('')}</tbody></table>`;
+      }).join('')}</tbody></table>${moreHtml}`;
 
+      const moreBtn = $('#inv-show-more');
+      if(moreBtn) moreBtn.addEventListener('click', ()=>{ invShown += INV_PAGE; renderInventoryTable(); });
       bindStockRowActions();
       return;
     }
@@ -947,7 +1137,7 @@ function wrapCollectionRef(ref){
           ${g.dims.map((v,i)=>`<td>${v ? `<span class="badge ${badgeClass(dims[i])}">${escapeHtml(v)}</span>` : '—'}</td>`).join('')}
           <td class="num-cell">${g.cantidad}</td>
         </tr>
-        <tr class="group-detail-row" data-group-detail="${gkey}" style="display:${isOpen ? 'table-row' : 'none'};">
+        ${!isOpen ? '' : `<tr class="group-detail-row" data-group-detail="${gkey}">
           <td colspan="${dims.length+2}" style="background:var(--paper-dim); padding:10px 10px 10px 34px;">
             <table style="margin-top:0;"><thead><tr>${otherDims.map(d=>`<th>${d.charAt(0).toUpperCase()+d.slice(1)}</th>`).join('')}<th>Código</th><th>Cantidad</th><th></th></tr></thead><tbody>
               ${g.items.sort((a,b)=>compareByFields(a,b,otherDims)).map(it=>{
@@ -965,19 +1155,18 @@ function wrapCollectionRef(ref){
               }).join('')}
             </tbody></table>
           </td>
-        </tr>`;
+        </tr>`}`;
       }).join('')}
     </tbody><tfoot><tr><td></td><td colspan="${dims.length}" style="font-weight:600;">Total</td><td class="num-cell" style="font-weight:600;">${total}</td></tr></tfoot></table>`;
 
     $$('#inventory-table [data-group-toggle]').forEach(row=>{
       row.addEventListener('click', ()=>{
+        // El detalle de cada grupo se arma recién al abrirlo (antes se dibujaban todos, abiertos o no).
         const key = row.dataset.groupToggle;
-        const detail = $(`#inventory-table [data-group-detail="${CSS.escape(key)}"]`);
-        const caret = $(`#inventory-table [data-caret="${CSS.escape(key)}"]`);
-        const isOpen = detail.style.display !== 'none';
-        detail.style.display = isOpen ? 'none' : 'table-row';
-        caret.textContent = isOpen ? '▸' : '▾';
-        if(isOpen) expandedGroupKeys.delete(key); else expandedGroupKeys.add(key);
+        if(expandedGroupKeys.has(key)) expandedGroupKeys.delete(key); else expandedGroupKeys.add(key);
+        const y = window.scrollY;
+        renderInventoryTable();
+        window.scrollTo(0, y);
       });
     });
     bindStockRowActions();
@@ -1029,7 +1218,8 @@ function wrapCollectionRef(ref){
     });
   }
 
-  function addOrMerge(entry){
+  // idx (opcional): Map clave->línea. En cargas masivas evita recorrer todo el stock por cada fila.
+  function addOrMerge(entry, idx){
     const norm = {
       modelo: String(entry.modelo||'').trim(), color: String(entry.color||'').trim(),
       talle: String(entry.talle||'').trim(), temporada: String(entry.temporada||'').trim(),
@@ -1038,8 +1228,13 @@ function wrapCollectionRef(ref){
     };
     if(!norm.modelo || !norm.color || !norm.talle || !norm.temporada || !norm.locacion) return false;
     const key = itemKeyFields(norm);
-    const existing = items.find(it => itemKeyFields(it) === key);
-    if(existing){ existing.cantidad += norm.cantidad; if(!existing.tipo && norm.tipo) existing.tipo = norm.tipo; } else { items.push(Object.assign({id: uid('it')}, norm)); }
+    const existing = idx ? idx.get(key) : items.find(it => itemKeyFields(it) === key);
+    if(existing){ existing.cantidad += norm.cantidad; if(!existing.tipo && norm.tipo) existing.tipo = norm.tipo; }
+    else {
+      const created = Object.assign({id: uid('it')}, norm);
+      items.push(created);
+      if(idx) idx.set(key, created);
+    }
     return true;
   }
 
@@ -1134,7 +1329,19 @@ function wrapCollectionRef(ref){
     }
   }
 
-  $('#btn-template').addEventListener('click', ()=>{
+  $('#btn-backup').addEventListener('click', ()=>{
+    const data = { exportado: new Date().toISOString(), items, catalog, recentLoads };
+    const blob = new Blob([JSON.stringify(data, null, 1)], {type:'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `respaldo-stock-${new Date().toISOString().slice(0,10)}.json`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(a.href), 1000);
+  });
+
+  $('#btn-template').addEventListener('click', async ()=>{
+    try{ await ensureXLSX(); }
+    catch(e){ alert('No se pudo cargar el generador de Excel. Revisá tu conexión e intentá de nuevo.'); return; }
     const ws = XLSX.utils.json_to_sheet([{modelo:'Osito Polar', tipo:'Pijama', color:'Celeste', talle:'M', temporada:'Invierno 2026', subtemporada:'Drop 1', locacion:'Depósito Central', cantidad:10, codigo:'7791234567890'}]);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Stock');
@@ -1144,12 +1351,14 @@ function wrapCollectionRef(ref){
   const EXPORT_COL_LABELS = {modelo:'Modelo', tipo:'Tipo', color:'Color', temporada:'Temporada', subtemporada:'Subtemporada', locacion:'Locación'};
   const EXPORT_COL_ORDER = ['modelo','tipo','temporada','subtemporada','color','locacion'];
 
-  $('#btn-export').addEventListener('click', ()=>{
+  $('#btn-export').addEventListener('click', async ()=>{
     const msgBox = $('#export-col-msg');
     const checked = $$('#export-col-chips input[type=checkbox]:checked').map(cb=>cb.value);
     const dims = EXPORT_COL_ORDER.filter(d=>checked.includes(d));
     if(dims.length === 0){ msgBox.innerHTML = '<div class="msg err">Elegí al menos una variable.</div>'; return; }
     msgBox.innerHTML = '';
+    try{ await ensureXLSX(); }
+    catch(e){ msgBox.innerHTML = '<div class="msg err">No se pudo cargar el generador de Excel. Revisá tu conexión e intentá de nuevo.</div>'; return; }
 
     if(items.length === 0){
       const ws = XLSX.utils.aoa_to_sheet([dims.map(d=>EXPORT_COL_LABELS[d]).concat(['Total'])]);
@@ -1191,16 +1400,22 @@ function wrapCollectionRef(ref){
     const msgBox = $('#excel-msg');
     if(!file) return;
     try{
+      try{ await ensureXLSX(); }
+      catch(e){ msgBox.innerHTML = '<div class="msg err">No se pudo cargar el lector de Excel. Revisá tu conexión e intentá de nuevo.</div>'; return; }
       const buf = await file.arrayBuffer();
       const wb = XLSX.read(buf, {type:'array'});
       const ws = wb.Sheets[wb.SheetNames[0]];
       const rows = XLSX.utils.sheet_to_json(ws, {defval:''});
       let added = 0, skipped = 0, newVars = 0;
       const codigoConflicts = [];
+      // copia para volver atrás si el guardado falla (así no queda en pantalla algo que no se guardó)
+      const prevItems = JSON.stringify(items), prevCatalog = JSON.stringify(catalog);
+      const idx = new Map();
+      items.forEach(it=>{ const k = itemKeyFields(it); if(!idx.has(k)) idx.set(k, it); });
       rows.forEach(row=>{
         const norm = {};
         Object.keys(row).forEach(k=> norm[k.trim().toLowerCase()] = row[k]);
-        const ok = addOrMerge({modelo:norm.modelo, color:norm.color, talle:norm.talle, temporada:norm.temporada, subtemporada:norm.subtemporada, tipo:norm.tipo, locacion:norm.locacion, cantidad:norm.cantidad});
+        const ok = addOrMerge({modelo:norm.modelo, color:norm.color, talle:norm.talle, temporada:norm.temporada, subtemporada:norm.subtemporada, tipo:norm.tipo, locacion:norm.locacion, cantidad:norm.cantidad}, idx);
         if(ok){
           added++;
           Object.entries(SIMPLE_FIELD_TO_CATALOG).forEach(([field,listName])=>{ if(addToCatalog(listName, norm[field])) newVars++; });
@@ -1214,7 +1429,14 @@ function wrapCollectionRef(ref){
           }
         } else skipped++;
       });
-      await saveStock(); await saveCatalog();
+      const saved = await persistAppData();
+      if(!saved){
+        items = JSON.parse(prevItems); catalog = JSON.parse(prevCatalog);
+        msgBox.innerHTML = '<div class="msg err">La carga NO se guardó, así que no se cargó ninguna fila. Mirá el aviso rojo de arriba para ver el motivo.</div>';
+        $('#excel-file').value = '';
+        renderAll();
+        return;
+      }
       let html = `<div class="msg ok">${added} filas cargadas${skipped?`, ${skipped} filas omitidas por datos incompletos`:''}${newVars?`, ${newVars} valores nuevos agregados a Variables`:''}.</div>`;
       if(codigoConflicts.length){
         html += `<div class="msg err" style="margin-top:8px;">Código de producto duplicado — no se asignó en estos casos: ${codigoConflicts.join('; ')}. El stock de esas filas sí se cargó, pero revisá el código en Variables → Modelos.</div>`;
@@ -1609,13 +1831,21 @@ function wrapCollectionRef(ref){
   // ---------- Fotos (varias por combinación de modelo y color) ----------
   function photosCollection(){ return appDocRef ? appDocRef.collection('photos') : null; }
 
+  // Si dos dibujados piden la misma foto a la vez, comparten la misma lectura (antes el segundo recibía "sin foto").
+  const photoPending = {};
   async function getPhotosDoc(key){
-    if(!(key in photoCache)){
-      photoCache[key] = null;
-      const col = photosCollection();
-      if(col){ try{ const snap = await col.doc(key).get(); photoCache[key] = snap.exists ? snap.data() : null; } catch(e){ photoCache[key] = null; } }
+    if(key in photoCache) return photoCache[key];
+    if(!photoPending[key]){
+      photoPending[key] = (async()=>{
+        let val = null;
+        const col = photosCollection();
+        if(col){ try{ const snap = await col.doc(key).get(); val = snap.exists ? snap.data() : null; } catch(e){ val = null; } }
+        if(!(key in photoCache)) photoCache[key] = val; // si mientras tanto se guardó una foto, no pisarla
+        delete photoPending[key];
+        return photoCache[key];
+      })();
     }
-    return photoCache[key];
+    return photoPending[key];
   }
   function photosOf(data){ return data && Array.isArray(data.photos) ? data.photos : (data && data.url ? [{assetId:data.assetId, url:data.url}] : []); }
 
@@ -1779,6 +2009,9 @@ function wrapCollectionRef(ref){
     if(catalog.tipos.includes(prevTipo)) tipoSel.value = prevTipo;
   }
 
+  const CAT_PAGE = 24;      // tarjetas (y por lo tanto lecturas de fotos) por vez
+  let catShown = CAT_PAGE;
+  let catSig = '';
   async function renderCatalogoGrid(){
     const grid = $('#catalogo-grid');
     if(!grid) return;
@@ -1802,9 +2035,13 @@ function wrapCollectionRef(ref){
     });
     const rows = Object.values(groups).sort((a,b)=> a.modelo.localeCompare(b.modelo,'es') || a.color.localeCompare(b.color,'es'));
 
-    await Promise.all(rows.map(g=> getPhotosDoc(photoKey(g.modelo, g.color))));
+    const sig = JSON.stringify([talle, color, loc, temp, tipo]);
+    if(sig !== catSig){ catSig = sig; catShown = CAT_PAGE; }
+    const visibleRows = rows.slice(0, catShown);
 
-    grid.innerHTML = `<div class="cat-grid">${rows.map(g=>{
+    await Promise.all(visibleRows.map(g=> getPhotosDoc(photoKey(g.modelo, g.color))));
+
+    grid.innerHTML = `<div class="cat-grid">${visibleRows.map(g=>{
       const key = photoKey(g.modelo, g.color);
       const fotos = photosOf(photoCache[key]);
       const idx = fotos.length ? Math.min(catPhotoIndex[key]||0, fotos.length-1) : 0;
@@ -1822,7 +2059,10 @@ function wrapCollectionRef(ref){
           <button class="secondary" type="button" data-share-modelo="${escapeHtml(g.modelo)}" data-share-color="${escapeHtml(g.color)}" ${fotos.length?'':'disabled'}>Compartir</button>
         </div>
       </div>`;
-    }).join('')}</div>`;
+    }).join('')}</div>${rows.length > visibleRows.length ? `<div style="text-align:center; margin:18px 0;"><p class="hint" style="margin:0 0 8px;">Mostrando ${visibleRows.length} de ${rows.length}.</p><button class="secondary" id="cat-show-more" type="button">Ver ${Math.min(CAT_PAGE, rows.length - visibleRows.length)} más</button></div>` : ''}`;
+
+    const catMore = $('#cat-show-more');
+    if(catMore) catMore.addEventListener('click', ()=>{ catShown += CAT_PAGE; renderCatalogoGrid(); });
 
     $$('[data-nav]', grid).forEach(btn=>{
       btn.addEventListener('click', ()=>{
@@ -2042,6 +2282,7 @@ function wrapCollectionRef(ref){
       btn.classList.add('active');
       $$('section.panel').forEach(p=>p.classList.remove('active'));
       $(`section.panel[data-panel="${btn.dataset.tab}"]`).classList.add('active');
+      if(btn.dataset.tab === 'inventario'){ renderInventoryTable(); renderRecentLoads(); }
       if(btn.dataset.tab === 'transferir'){ renderTransferSelect(); renderFaltantesSelects(); renderFaltantesTable(); }
       if(btn.dataset.tab === 'variables'){ renderModelosCard(); renderVariableCards(); renderTemporadasCard(); }
       if(btn.dataset.tab === 'catalogo'){ fillCatalogoSelects(); renderCatalogoGrid(); }
@@ -2081,40 +2322,27 @@ function wrapCollectionRef(ref){
     $(sel).addEventListener('change', renderInventoryTable);
   });
 
+  // Solo se dibuja la pestaña que se está viendo. Las demás se dibujan al abrirlas (ver "Tabs / subtabs"),
+  // así al arrancar y en cada cambio no se arma todo el catálogo, las fotos, las variables, etc.
+  function activePanelName(){
+    const p = document.querySelector('section.panel.active');
+    return p ? p.dataset.panel : 'inventario';
+  }
   function renderAll(){
-   
     fillSelectsFromCatalog();
-    renderInventoryTable();
-    renderTransferSelect();
-    renderFaltantesSelects();
-    renderFaltantesTable();
-    renderModelosCard();
-    renderVariableCards();
-    renderTemporadasCard();
-    renderRecentLoads();
-    fillCatalogoSelects();
-    renderCatalogoGrid();
+    switch(activePanelName()){
+      case 'inventario': renderInventoryTable(); renderRecentLoads(); break;
+      case 'transferir': renderTransferSelect(); renderFaltantesSelects(); renderFaltantesTable(); break;
+      case 'variables': renderModelosCard(); renderVariableCards(); renderTemporadasCard(); break;
+      case 'catalogo': fillCatalogoSelects(); renderCatalogoGrid(); break;
+    }
   }
 
   async function init(){
     await initRuntime();
-    await loadAppData();
+    await startSync();
     await migrateCatalogFromItemsIfEmpty();
     renderAll();
-    if(appDocRef){
-      try{
-        appDocRef.onSnapshot(snap=>{
-          if(!snap.exists || editingStockId) return; // no pisar una edición en curso
-          const data = snap.data() || {};
-          items = data.items ? JSON.parse(data.items) : [];
-          items.forEach(it=>{ if(it.subtemporada === undefined) it.subtemporada = ''; if(it.tipo === undefined) it.tipo = ''; });
-          catalog = data.catalog ? Object.assign({modelos:[],colores:[],talles:[],locaciones:[],temporadas:[],tipos:[]}, JSON.parse(data.catalog)) : {modelos:[],colores:[],talles:[],locaciones:[],temporadas:[],tipos:[]};
-          catalog.modelos.forEach(m=>{ if(m.subtemporada === undefined) m.subtemporada = ''; if(m.precio === undefined) m.precio = ''; if(m.tipo === undefined) m.tipo = ''; });
-          recentLoads = data.recentLoads ? JSON.parse(data.recentLoads) : [];
-          renderAll();
-        }, err=>{ console.error('Se cortó la sincronización en tiempo real', err); });
-      } catch(e){ console.error('No se pudo suscribir a cambios en tiempo real', e); }
-    }
     if(!appDocRef){
       const warn = document.createElement('div');
       warn.className = 'msg err';

@@ -153,3 +153,29 @@ precio + galería de fotos por modelo) para mandar el link por
 Instagram sin exponer el stock interno. Una vez que esta base esté
 deployada y andando, armamos esa página como una segunda ruta del mismo
 sitio (por ejemplo `/catalogo`), leyendo los mismos datos de Firebase.
+
+## Cambios de guardado y velocidad (octubre 2026)
+
+- **El guardado ya no falla en silencio.** Si algo impide guardar (permisos, sin
+  conexión, demasiados datos), aparece un cartel rojo fijo arriba con el motivo.
+  La carga masiva ya no dice "N filas cargadas" si no se pudo guardar: en ese caso
+  no carga nada y avisa.
+- **Más stock en el mismo documento.** El stock ahora se guarda en un formato
+  compacto (campo `stock` de `appdata/shared`): cada texto se guarda una sola vez
+  y cada fila solo referencia posiciones. Antes el documento de Firestore (límite
+  de 1 MiB) se llenaba con unas 4.800 combinaciones; ahora entran más de 20.000.
+  Se sigue leyendo el formato viejo (campo `items`), así que la migración ocurre
+  sola en el primer guardado. **No hace falta cambiar las reglas de Firestore.**
+- **No se pisa el stock si falla la lectura.** Si al abrir no se pudo leer lo
+  guardado, la app no escribe nada hasta lograr leerlo.
+- **Abre más rápido.** Las fotos del catálogo se leen recién al abrir la pestaña
+  Catálogo, de a 24 tarjetas ("Ver más" carga las siguientes); solo se dibuja la
+  pestaña que se está viendo; la tabla de stock muestra de a 200 líneas y arma el
+  detalle de cada grupo recién al abrirlo; `xlsx` y el lector de códigos se
+  descargan solo cuando se usan.
+- **Respaldo.** En Inventario → Descargar Excel hay un botón "Descargar respaldo
+  (.json)" con todo el stock y el catálogo (sin fotos).
+
+> Importante al actualizar: el formato nuevo no lo entiende la versión vieja de la
+> página. Después de publicar, cerrá y volvé a abrir la app en todos los
+> dispositivos (una pestaña vieja que siga abierta vería el stock vacío).
