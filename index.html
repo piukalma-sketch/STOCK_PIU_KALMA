@@ -157,6 +157,20 @@
   #loading{padding:60px 0; text-align:center; color:var(--ink-soft); font-size:13.5px;}
   .hint{font-size:12px; color:var(--ink-soft); margin-top:8px;}
   .divider{height:1px; background:var(--line); margin:22px 0;}
+
+  /* Carga masiva: elegir modo + vista previa */
+  .mode-opts{display:grid; gap:10px; margin:8px 0 16px;}
+  .mode-opt{display:flex; gap:10px; align-items:flex-start; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius); cursor:pointer; text-transform:none; letter-spacing:0; font-size:13px; color:var(--ink); font-weight:400; margin:0; background:var(--card);}
+  .mode-opt input{width:auto; margin:3px 0 0; flex:none;}
+  .mode-opt:has(input:checked){border-color:var(--ink); background:var(--paper-dim);}
+  .mode-opt.danger:has(input:checked){border-color:var(--danger);}
+  .mode-opt small{display:block; color:var(--ink-soft); font-size:12px; margin-top:3px;}
+  .import-preview{border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px; background:var(--card); margin-top:16px; font-size:13px; line-height:1.55;}
+  .import-preview.replace{border-color:var(--danger);}
+  .import-preview .line{margin:4px 0;}
+  .import-preview .notes{margin:10px 0 0; padding-left:18px; color:var(--ink-soft); font-size:12px;}
+  .import-preview .actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:14px;}
+  button.danger-solid{background:var(--danger); color:#fff; border-color:var(--danger);}
 </style>
 </head>
 <body>
@@ -267,11 +281,23 @@
       </div>
 
       <div class="subpanel" data-subpanel="inv-masiva">
-        <div class="card" style="max-width:560px;">
+        <div class="card" style="max-width:680px;">
           <h3 style="font-size:17px;">Carga masiva</h3>
-          <p class="hint" style="margin-top:6px;">Subí un .xlsx con columnas: <span class="mono">modelo, tipo, color, talle, temporada, subtemporada, locacion, cantidad, codigo</span>. Las columnas <b>tipo</b>, <b>subtemporada</b> y <b>codigo</b> son opcionales: dejá tipo vacío si no categorizás por tipo de prenda, y subtemporada vacía si esa temporada no se divide en drops/subtemporadas. Si el modelo ya existe con ese código, no hace falta repetirlo; si es nuevo, esta es la forma de cargarle su código de producto de una. Las filas se suman al stock existente. Si un modelo no existía con esa temporada (y subtemporada), se crea solo en Variables.</p>
-          <div class="field" style="margin-top:14px;"><input type="file" accept=".xlsx,.xls" id="excel-file"></div>
+          <p class="hint" style="margin:6px 0 14px;">Subí un .xlsx con el <b>mismo formato que "Descargar Excel"</b>: una fila por combinación de <b>Modelo, Tipo, Temporada, Subtemporada, Color y Locación</b>, y una columna por cada talle con su cantidad. La columna Total y la fila TOTAL se ignoran. Son obligatorias Modelo, Temporada, Color y Locación; Tipo y Subtemporada son opcionales. Si querés volver a subir un Excel que descargaste, descargalo con todas las variables tildadas. Se lee la primera hoja. También se sigue aceptando el formato anterior (una fila por talle, con columnas <span class="mono">talle</span> y <span class="mono">cantidad</span>, y opcionalmente <span class="mono">codigo</span>).</p>
+
+          <label>¿Qué querés hacer con el archivo?</label>
+          <div class="mode-opts">
+            <label class="mode-opt"><input type="radio" name="import-mode" value="update" checked>
+              <span><b>Actualizar items</b><small>Solo se tocan los items que están en el archivo: su cantidad pasa a ser la del archivo (si es 0, se borra esa línea) y los que no existían se crean. Todo lo demás se conserva como está. Las celdas vacías no cambian nada.</small></span>
+            </label>
+            <label class="mode-opt danger"><input type="radio" name="import-mode" value="replace">
+              <span><b>Reemplazar todo el stock</b><small>Se borra todo el stock cargado y queda únicamente lo que trae el archivo. Modelos, precios, códigos y fotos no se tocan.</small></span>
+            </label>
+          </div>
+
+          <div class="field"><input type="file" accept=".xlsx,.xls" id="excel-file"></div>
           <button class="secondary" id="btn-template" type="button">Descargar planilla modelo</button>
+          <div id="excel-preview"></div>
           <div id="excel-msg" style="margin-top:14px;"></div>
         </div>
       </div>
@@ -852,17 +878,22 @@ function wrapCollectionRef(ref){
     t.subtemporadas = t.subtemporadas.filter(s=>s!==subNombre);
   }
 
-  function addToCatalog(listName, value){
+  function sortCatalogList(listName){ catalog[listName].sort((a,b)=>a.localeCompare(b)); }
+  // noSort: en cargas masivas se ordena una sola vez al final (ordenar después de cada alta es lentísimo).
+  function addToCatalog(listName, value, noSort){
     value = String(value||'').trim();
     if(!value) return false;
     const exists = catalog[listName].some(v=>v.toLowerCase() === value.toLowerCase());
     if(exists) return false;
     catalog[listName].push(value);
-    catalog[listName].sort((a,b)=>a.localeCompare(b));
+    if(!noSort) sortCatalogList(listName);
     return true;
   }
 
-  function addModel(nombre, temporada, subtemporada, codigo, precio, tipo){
+  function sortCatalogModelos(){
+    catalog.modelos.sort((a,b)=> a.nombre.localeCompare(b.nombre) || a.temporada.localeCompare(b.temporada) || (a.subtemporada||'').localeCompare(b.subtemporada||''));
+  }
+  function addModel(nombre, temporada, subtemporada, codigo, precio, tipo, noSort){
     nombre = String(nombre||'').trim(); temporada = String(temporada||'').trim();
     subtemporada = String(subtemporada||'').trim(); codigo = String(codigo||'').trim(); tipo = String(tipo||'').trim();
     precio = precio===undefined || precio===null || precio==='' ? '' : Math.max(0, Number(precio)||0);
@@ -878,7 +909,7 @@ function wrapCollectionRef(ref){
     }
     if(codigo && catalog.modelos.some(m=>m.codigo && m.codigo.toLowerCase()===codigo.toLowerCase())) return 'codigo-duplicado';
     catalog.modelos.push({id: uid('mdl'), nombre, temporada, subtemporada, codigo, precio, tipo});
-    catalog.modelos.sort((a,b)=> a.nombre.localeCompare(b.nombre) || a.temporada.localeCompare(b.temporada) || (a.subtemporada||'').localeCompare(b.subtemporada||''));
+    if(!noSort) sortCatalogModelos();
     return true;
   }
 
@@ -1345,10 +1376,15 @@ function wrapCollectionRef(ref){
     setTimeout(()=>URL.revokeObjectURL(a.href), 1000);
   });
 
+  // La planilla modelo tiene el mismo formato que "Descargar Excel": variables + una columna por talle + Total.
   $('#btn-template').addEventListener('click', async ()=>{
     try{ await ensureXLSX(); }
     catch(e){ alert('No se pudo cargar el generador de Excel. Revisá tu conexión e intentá de nuevo.'); return; }
-    const ws = XLSX.utils.json_to_sheet([{modelo:'Osito Polar', tipo:'Pijama', color:'Celeste', talle:'M', temporada:'Invierno 2026', subtemporada:'Drop 1', locacion:'Depósito Central', cantidad:10, codigo:'7791234567890'}]);
+    const talles = catalog.talles.length ? catalog.talles.slice().sort(compareTalle) : ['S','M','L','XL'];
+    const loc = catalog.locaciones[0] || 'Depósito Central';
+    const header = ['Modelo','Tipo','Temporada','Subtemporada','Color','Locación'].concat(talles).concat(['Total']);
+    const ejemplo = (modelo, color, cants)=> [modelo,'Pijama','Invierno 2026','Drop 1',color,loc].concat(talles.map((t,i)=> cants[i] || 0)).concat([talles.reduce((s,t,i)=> s + (cants[i] || 0), 0)]);
+    const ws = XLSX.utils.aoa_to_sheet([header, ejemplo('Osito Polar','Celeste',[10,8,5,0]), ejemplo('Osito Polar','Rosa',[6,6,4,2])]);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Stock');
     saveWorkbook(wb, 'planilla-modelo-stock.xlsx');
@@ -1401,9 +1437,305 @@ function wrapCollectionRef(ref){
     saveWorkbook(wb, `stock-pijamas-${new Date().toISOString().slice(0,10)}.xlsx`);
   });
 
+  // ---------- Carga masiva: lee el MISMO formato que "Descargar Excel" ----------
+  // ===== IMPORT: INICIO (funciones puras, se prueban por separado)
+  function normHeader(s){ return String(s === undefined || s === null ? '' : s).normalize('NFD').replace(/[̀-ͯ]/g, '').trim().toLowerCase(); }
+  const IMPORT_DIMS = ['modelo','tipo','temporada','subtemporada','color','locacion','codigo'];
+  const IMPORT_REQUIRED = ['modelo','temporada','color','locacion'];
+  const IMPORT_LABEL = {modelo:'Modelo', temporada:'Temporada', color:'Color', locacion:'Locación', talle:'Talle', cantidad:'Cantidad'};
+  const IMPORT_MAX_NOTES = 8;
+
+  // -> {empty:true} | {bad:true} | {n:entero>=0}
+  function parseQty(v){
+    if(v === undefined || v === null) return {empty:true};
+    const s = typeof v === 'string' ? v.trim() : v;
+    if(s === '') return {empty:true};
+    const n = typeof s === 'number' ? s : Number(String(s).replace(',', '.'));
+    if(!Number.isFinite(n) || n < 0 || Math.abs(n - Math.round(n)) > 1e-9) return {bad:true};
+    return {n: Math.round(n)};
+  }
+
+  // aoa: filas del Excel como arreglo de arreglos (primera hoja). Devuelve {records, error, format, ...}.
+  // Cada record: {modelo,tipo,temporada,subtemporada,color,locacion,codigo,talle,cantidad(null = celda vacía),row}
+  function parseStockRows(aoa, rowOffset){
+    rowOffset = rowOffset || 0;
+    const res = {records:[], error:null, format:'', skipped:0, invalidCells:0, totalRows:0, notes:[], hasSubtemporada:false, hasTipo:false};
+    const note = (msg)=>{ if(res.notes.length < IMPORT_MAX_NOTES) res.notes.push(msg); };
+
+    let hi = -1;
+    for(let i = 0; i < Math.min(aoa.length, 10); i++){
+      const hs = (aoa[i] || []).map(normHeader);
+      if(hs.includes('modelo') && hs.includes('color')){ hi = i; break; }
+    }
+    if(hi < 0){ res.error = 'No encontré la fila de títulos. La primera fila tiene que tener al menos las columnas Modelo y Color (igual que en "Descargar Excel").'; return res; }
+
+    const labels = aoa[hi].map(h => String(h === undefined || h === null ? '' : h).trim());
+    const heads = labels.map(normHeader);
+    const dimCol = {};
+    heads.forEach((h, i)=>{ if(IMPORT_DIMS.includes(h) && !(h in dimCol)) dimCol[h] = i; });
+    const missing = IMPORT_REQUIRED.filter(d => !(d in dimCol));
+    if(missing.length){ res.error = 'Faltan columnas obligatorias: ' + missing.map(d => IMPORT_LABEL[d]).join(', ') + '. Si es un Excel descargado, volvé a descargarlo con todas las variables tildadas.'; return res; }
+    res.hasSubtemporada = 'subtemporada' in dimCol;
+    res.hasTipo = 'tipo' in dimCol;
+
+    const iTalle = heads.indexOf('talle'), iCant = heads.indexOf('cantidad');
+    const flat = iTalle >= 0 && iCant >= 0;
+    const talleCols = [];
+    if(flat){
+      res.format = 'una fila por talle';
+    } else {
+      res.format = 'talles como columnas';
+      const dimIdx = new Set(Object.values(dimCol));
+      heads.forEach((h, i)=>{
+        if(dimIdx.has(i) || labels[i] === '' || h === 'total' || h === 'talle' || h === 'cantidad') return;
+        talleCols.push({i, talle: labels[i]});
+      });
+      if(!talleCols.length){ res.error = 'No encontré columnas de talle. Después de las columnas de variables tiene que haber una columna por cada talle (por ejemplo S, M, L).'; return res; }
+    }
+
+    const cell = (row, i)=> row[i] === undefined || row[i] === null ? '' : row[i];
+    const get = (row, d)=> d in dimCol ? String(cell(row, dimCol[d])).trim() : '';
+
+    for(let r = hi + 1; r < aoa.length; r++){
+      const row = aoa[r] || [];
+      if(row.every(c => c === '' || c === undefined || c === null)) continue;
+      const rowNum = r + 1 + rowOffset;
+      const filled = Object.keys(dimCol).filter(d => get(row, d) !== '');
+      if(filled.length === 1 && normHeader(get(row, filled[0])) === 'total') continue; // fila TOTAL del Excel descargado
+      res.totalRows++;
+
+      const base = {modelo:get(row,'modelo'), tipo:get(row,'tipo'), temporada:get(row,'temporada'), subtemporada:get(row,'subtemporada'), color:get(row,'color'), locacion:get(row,'locacion'), codigo:get(row,'codigo'), row:rowNum};
+      const faltan = IMPORT_REQUIRED.filter(d => base[d] === '');
+      if(faltan.length){ res.skipped++; note(`Fila ${rowNum}: se omitió, falta ${faltan.map(d => IMPORT_LABEL[d]).join(', ')}.`); continue; }
+
+      if(flat){
+        const talle = String(cell(row, iTalle)).trim();
+        if(talle === ''){ res.skipped++; note(`Fila ${rowNum}: se omitió, falta el Talle.`); continue; }
+        const q = parseQty(cell(row, iCant));
+        if(q.bad){ res.invalidCells++; note(`Fila ${rowNum}: la cantidad "${cell(row, iCant)}" no es un número entero válido, se omitió.`); continue; }
+        res.records.push(Object.assign({}, base, {talle, cantidad: q.empty ? null : q.n}));
+      } else {
+        talleCols.forEach(tc=>{
+          const q = parseQty(cell(row, tc.i));
+          if(q.empty) { res.records.push(Object.assign({}, base, {talle: tc.talle, cantidad: null})); return; }
+          if(q.bad){ res.invalidCells++; note(`Fila ${rowNum}, talle ${tc.talle}: "${cell(row, tc.i)}" no es un número entero válido, se omitió.`); return; }
+          res.records.push(Object.assign({}, base, {talle: tc.talle, cantidad: q.n}));
+        });
+      }
+    }
+    return res;
+  }
+
+  // Calcula qué se va a hacer (sin tocar nada). mode: 'update' | 'replace'.
+  function buildImportPlan(records, mode, currentItems, opts){
+    opts = opts || {};
+    const plan = {mode, error:null, create:[], change:[], remove:[], same:[], final:[], emptyCells:0, ignoredZero:0, merged:0, untouched:0,
+                  linesBefore: currentItems.length, unitsBefore: currentItems.reduce((s, it) => s + (it.cantidad || 0), 0), linesAfter:0, unitsAfter:0};
+
+    // Si una misma combinación aparece más de una vez en el archivo, se suman.
+    const agg = new Map();
+    records.forEach(r=>{
+      const k = itemKeyFields(r);
+      let a = agg.get(k);
+      if(!a){ a = Object.assign({}, r, {cantidad:null}); agg.set(k, a); }
+      else if(r.cantidad !== null && a.cantidad !== null) plan.merged++;
+      if(r.cantidad !== null) a.cantidad = (a.cantidad || 0) + r.cantidad;
+      if(!a.tipo && r.tipo) a.tipo = r.tipo;
+      if(!a.codigo && r.codigo) a.codigo = r.codigo;
+    });
+
+    const idx = new Map();
+    currentItems.forEach(it=>{ const k = itemKeyFields(it); if(!idx.has(k)) idx.set(k, it); });
+
+    if(records.length === 0){ plan.error = 'El archivo no tiene ninguna fila con datos.'; return plan; }
+
+    if(mode === 'replace'){
+      agg.forEach((a, k)=>{
+        if(a.cantidad === null){ plan.emptyCells++; return; }
+        if(a.cantidad === 0){ plan.ignoredZero++; return; }
+        plan.final.push({rec:a, existing: idx.get(k) || null});
+      });
+      if(plan.final.length === 0){ plan.error = 'El archivo no tiene ninguna cantidad mayor a 0, así que no se va a borrar el stock. Revisá que sea el archivo correcto.'; return plan; }
+      const keep = new Set(plan.final.filter(f => f.existing).map(f => f.existing));
+      plan.remove = currentItems.filter(it => !keep.has(it)).map(item => ({item}));
+      plan.linesAfter = plan.final.length;
+      plan.unitsAfter = plan.final.reduce((s, f) => s + f.rec.cantidad, 0);
+      return plan;
+    }
+
+    // mode === 'update'
+    if(!opts.hasSubtemporada && currentItems.some(it => it.subtemporada)){
+      plan.error = 'Tu stock tiene subtemporadas pero el archivo no trae la columna Subtemporada, así que no se puede saber a qué línea corresponde cada cantidad. Descargá el Excel con todas las variables tildadas y usá ese archivo.';
+      return plan;
+    }
+    agg.forEach((a, k)=>{
+      if(a.cantidad === null){ plan.emptyCells++; return; }
+      const ex = idx.get(k);
+      if(ex){
+        if(a.cantidad === 0) plan.remove.push({item: ex});
+        else if(ex.cantidad !== a.cantidad) plan.change.push({item: ex, from: ex.cantidad, to: a.cantidad, rec: a});
+        else plan.same.push(a);
+      } else if(a.cantidad > 0) plan.create.push(a);
+      else plan.ignoredZero++;
+    });
+    plan.untouched = currentItems.filter(it => { const a = agg.get(itemKeyFields(it)); return !a || a.cantidad === null; }).length;
+    plan.linesAfter = plan.linesBefore - plan.remove.length + plan.create.length;
+    plan.unitsAfter = plan.unitsBefore
+      - plan.remove.reduce((s, x) => s + x.item.cantidad, 0)
+      + plan.change.reduce((s, c) => s + (c.to - c.from), 0)
+      + plan.create.reduce((s, a) => s + a.cantidad, 0);
+    return plan;
+  }
+  // ===== IMPORT: FIN
+
+  // Aplica el plan sobre `items` y `catalog` (en memoria; después se guarda). Devuelve estadísticas.
+  function applyImportPlan(plan){
+    const stats = {created:0, changed:0, removed:0, kept:0, newVars:0, codigoConflicts:[]};
+    const touched = []; // registros que quedan con cantidad > 0: sirven para completar Variables
+
+    const newItem = (a)=>({id: uid('it'), modelo:a.modelo, color:a.color, talle:a.talle, temporada:a.temporada, subtemporada:a.subtemporada, tipo:a.tipo || '', locacion:a.locacion, cantidad:a.cantidad});
+
+    if(plan.mode === 'replace'){
+      stats.removed = plan.remove.length;
+      items = plan.final.map(f=>{
+        touched.push(f.rec);
+        if(f.existing){
+          if(f.existing.cantidad !== f.rec.cantidad) stats.changed++; else stats.kept++;
+          f.existing.cantidad = f.rec.cantidad;
+          if(f.rec.tipo) f.existing.tipo = f.rec.tipo;
+          return f.existing;
+        }
+        stats.created++;
+        return newItem(f.rec);
+      });
+    } else {
+      const removeIds = new Set(plan.remove.map(x => x.item.id));
+      plan.change.forEach(c=>{
+        c.item.cantidad = c.to;
+        if(!c.item.tipo && c.rec.tipo) c.item.tipo = c.rec.tipo;
+        touched.push(c.rec);
+      });
+      plan.same.forEach(a => touched.push(a));
+      plan.create.forEach(a=>{ items.push(newItem(a)); touched.push(a); });
+      if(removeIds.size) items = items.filter(it => !removeIds.has(it.id));
+      stats.created = plan.create.length; stats.changed = plan.change.length; stats.removed = plan.remove.length;
+      stats.kept = items.length - stats.created - stats.changed;
+    }
+
+    // Completar Variables (colores, talles, locaciones, tipos, temporadas, subtemporadas, modelos) sin repetir trabajo
+    const seen = new Set();
+    const once = (k)=>{ if(seen.has(k)) return false; seen.add(k); return true; };
+    const dirtyLists = new Set(); let modelosDirty = false;
+    touched.forEach(a=>{
+      Object.entries(SIMPLE_FIELD_TO_CATALOG).forEach(([field, listName])=>{
+        const v = String(a[field] || '').trim();
+        if(v && once(listName + '|' + v.toLowerCase()) && addToCatalog(listName, v, true)){ stats.newVars++; dirtyLists.add(listName); }
+      });
+      if(once('T|' + a.temporada.toLowerCase()) && !findTemporada(a.temporada) && addTemporada(a.temporada)) stats.newVars++;
+      if(a.subtemporada && once('S|' + a.temporada.toLowerCase() + '|' + a.subtemporada.toLowerCase()) && addSubtemporada(a.temporada, a.subtemporada)) stats.newVars++;
+      if(once('M|' + modelComboKey(a.modelo, a.temporada, a.subtemporada) + '|' + String(a.codigo || '').toLowerCase())){
+        const mr = addModel(a.modelo, a.temporada, a.subtemporada, a.codigo, undefined, a.tipo, true);
+        if(mr === true) modelosDirty = true;
+        if(mr === true || mr === 'codigo-completado') stats.newVars++;
+        if(mr === 'codigo-duplicado'){
+          const owner = findModelByCodigo(a.codigo);
+          stats.codigoConflicts.push(`código "${escapeHtml(String(a.codigo))}" (modelo ${escapeHtml(String(a.modelo))}) ya pertenece a ${owner ? escapeHtml(owner.nombre) + ' (' + escapeHtml(owner.temporada) + ')' : 'otro modelo'}`);
+        }
+      }
+    });
+    dirtyLists.forEach(sortCatalogList);
+    if(modelosDirty) sortCatalogModelos();
+    return stats;
+  }
+
+  // ---------- Carga masiva: pantalla (elegir archivo -> vista previa -> aplicar) ----------
+  let pendingImport = null; // {fileName, parsed}
+  function currentImportMode(){ const r = $('input[name="import-mode"]:checked'); return r ? r.value : 'update'; }
+  const fmtN = (n)=> Number(n).toLocaleString('es-AR');
+  const plural = (n, uno, varios)=> `${fmtN(n)} ${n === 1 ? uno : varios}`;
+
+  function clearImportPreview(){ pendingImport = null; $('#excel-preview').innerHTML = ''; $('#excel-file').value = ''; }
+
+  function renderImportPreview(){
+    const box = $('#excel-preview');
+    if(!pendingImport){ box.innerHTML = ''; return; }
+    const p = pendingImport.parsed, mode = currentImportMode();
+    const plan = buildImportPlan(p.records, mode, items, {hasSubtemporada: p.hasSubtemporada});
+    const head = `<div class="line">Archivo <b>${escapeHtml(pendingImport.fileName)}</b>: ${plural(p.totalRows, 'fila leída', 'filas leídas')} (formato: ${escapeHtml(p.format)}).</div>`;
+    const notes = [];
+    if(p.skipped) notes.push(`${plural(p.skipped, 'fila omitida', 'filas omitidas')} por datos incompletos.`);
+    if(p.invalidCells) notes.push(`${plural(p.invalidCells, 'cantidad inválida omitida', 'cantidades inválidas omitidas')}.`);
+    if(plan.merged) notes.push(`${plural(plan.merged, 'combinación repetida', 'combinaciones repetidas')} en el archivo: se sumaron.`);
+    p.notes.forEach(n => notes.push(escapeHtml(n)));
+    if(p.skipped + p.invalidCells > p.notes.length) notes.push('… hay más filas con problemas que no se listan.');
+    const notesHtml = notes.length ? `<ul class="notes">${notes.map(n => `<li>${n}</li>`).join('')}</ul>` : '';
+
+    if(plan.error){
+      box.innerHTML = `<div class="import-preview ${mode === 'replace' ? 'replace' : ''}">${head}<div class="msg err" style="margin:10px 0 0;">${escapeHtml(plan.error)}</div>${notesHtml}<div class="actions"><button class="secondary" id="btn-cancel-import" type="button">Cancelar</button></div></div>`;
+    } else if(mode === 'replace'){
+      box.innerHTML = `<div class="import-preview replace">${head}
+        <div class="line"><b style="color:var(--danger);">Se va a reemplazar TODO el stock.</b></div>
+        <div class="line">Hoy hay ${plural(plan.linesBefore, 'línea', 'líneas')} (${plural(plan.unitsBefore, 'unidad', 'unidades')}). Después quedan ${plural(plan.linesAfter, 'línea', 'líneas')} (${plural(plan.unitsAfter, 'unidad', 'unidades')}), solo las del archivo.</div>
+        <div class="line">Se borran ${plural(plan.remove.length, 'línea', 'líneas')} del stock actual que no están en el archivo (o quedaron en 0).</div>
+        ${notesHtml}
+        <div class="actions"><button class="danger-solid" id="btn-apply-import" type="button">Reemplazar todo el stock</button><button class="secondary" id="btn-cancel-import" type="button">Cancelar</button></div></div>`;
+    } else {
+      const nothing = !plan.create.length && !plan.change.length && !plan.remove.length;
+      box.innerHTML = `<div class="import-preview">${head}
+        <div class="line">${plural(plan.change.length, 'item se actualiza', 'items se actualizan')} (cambia la cantidad), ${plural(plan.create.length, 'item nuevo se crea', 'items nuevos se crean')} y ${plural(plan.remove.length, 'línea se borra', 'líneas se borran')} (las que pusiste en 0).</div>
+        <div class="line">${plural(plan.untouched, 'línea del stock no está', 'líneas del stock no están')} en el archivo y se conserva${plan.untouched === 1 ? '' : 'n'} como está. ${plan.same.length ? plural(plan.same.length, 'item ya tenía', 'items ya tenían') + ' esa misma cantidad.' : ''}</div>
+        <div class="line">Unidades en total: ${fmtN(plan.unitsBefore)} → ${fmtN(plan.unitsAfter)}.</div>
+        ${nothing ? '<div class="msg err" style="margin:10px 0 0;">No hay nada para cambiar con este archivo.</div>' : ''}
+        ${notesHtml}
+        <div class="actions">${nothing ? '' : '<button class="primary" id="btn-apply-import" type="button">Aplicar cambios</button>'}<button class="secondary" id="btn-cancel-import" type="button">Cancelar</button></div></div>`;
+    }
+    const apply = $('#btn-apply-import'), cancel = $('#btn-cancel-import');
+    if(cancel) cancel.addEventListener('click', ()=>{ clearImportPreview(); $('#excel-msg').innerHTML = ''; });
+    if(apply) apply.addEventListener('click', ()=>{
+      if(plan.mode === 'replace'){
+        showConfirmModal(`¿Seguro que querés reemplazar TODO el stock? Se borran ${plural(plan.remove.length, 'línea', 'líneas')} y quedan solo las ${fmtN(plan.linesAfter)} del archivo. No se puede deshacer.`, doApplyImport);
+      } else doApplyImport();
+    });
+  }
+
+  async function doApplyImport(){
+    const msgBox = $('#excel-msg');
+    if(!pendingImport) return;
+    const p = pendingImport.parsed, mode = currentImportMode();
+    const plan = buildImportPlan(p.records, mode, items, {hasSubtemporada: p.hasSubtemporada});
+    if(plan.error){ renderImportPreview(); return; }
+    const applyBtn = $('#btn-apply-import'); if(applyBtn) applyBtn.disabled = true;
+    msgBox.innerHTML = '<div class="msg ok">Guardando…</div>';
+    // copia para volver atrás si el guardado falla (así no queda en pantalla algo que no se guardó)
+    const prevItems = JSON.stringify(items), prevCatalog = JSON.stringify(catalog);
+    const stats = applyImportPlan(plan);
+    const saved = await persistAppData();
+    if(!saved){
+      items = JSON.parse(prevItems); catalog = JSON.parse(prevCatalog);
+      msgBox.innerHTML = '<div class="msg err">La carga NO se guardó, así que el stock quedó como estaba. Mirá el aviso rojo de arriba para ver el motivo.</div>';
+      if(applyBtn) applyBtn.disabled = false;
+      renderAll();
+      return;
+    }
+    let html;
+    if(mode === 'replace'){
+      html = `<div class="msg ok">Listo: el stock se reemplazó. Ahora hay ${plural(plan.linesAfter, 'línea', 'líneas')} (${plural(plan.unitsAfter, 'unidad', 'unidades')}); se borraron ${plural(stats.removed, 'línea', 'líneas')} que no estaban en el archivo${stats.newVars ? `, y se agregaron ${plural(stats.newVars, 'valor nuevo', 'valores nuevos')} a Variables` : ''}.</div>`;
+    } else {
+      html = `<div class="msg ok">Listo: ${plural(stats.changed, 'item actualizado', 'items actualizados')}, ${plural(stats.created, 'nuevo', 'nuevos')}, ${plural(stats.removed, 'línea borrada', 'líneas borradas')}. El resto del stock se conservó${stats.newVars ? `; se agregaron ${plural(stats.newVars, 'valor nuevo', 'valores nuevos')} a Variables` : ''}.</div>`;
+    }
+    if(stats.codigoConflicts.length){
+      html += `<div class="msg err" style="margin-top:8px;">Código de producto duplicado, no se asignó en estos casos: ${stats.codigoConflicts.join('; ')}. El stock de esas filas sí se cargó, pero revisá el código en Variables → Modelos.</div>`;
+    }
+    clearImportPreview();
+    msgBox.innerHTML = html;
+    renderAll();
+  }
+
   $('#excel-file').addEventListener('change', async ()=>{
     const file = $('#excel-file').files[0];
     const msgBox = $('#excel-msg');
+    msgBox.innerHTML = '';
+    pendingImport = null; $('#excel-preview').innerHTML = '';
     if(!file) return;
     try{
       try{ await ensureXLSX(); }
@@ -1411,49 +1743,23 @@ function wrapCollectionRef(ref){
       const buf = await file.arrayBuffer();
       const wb = XLSX.read(buf, {type:'array'});
       const ws = wb.Sheets[wb.SheetNames[0]];
-      const rows = XLSX.utils.sheet_to_json(ws, {defval:''});
-      let added = 0, skipped = 0, newVars = 0;
-      const codigoConflicts = [];
-      // copia para volver atrás si el guardado falla (así no queda en pantalla algo que no se guardó)
-      const prevItems = JSON.stringify(items), prevCatalog = JSON.stringify(catalog);
-      const idx = new Map();
-      items.forEach(it=>{ const k = itemKeyFields(it); if(!idx.has(k)) idx.set(k, it); });
-      rows.forEach(row=>{
-        const norm = {};
-        Object.keys(row).forEach(k=> norm[k.trim().toLowerCase()] = row[k]);
-        const ok = addOrMerge({modelo:norm.modelo, color:norm.color, talle:norm.talle, temporada:norm.temporada, subtemporada:norm.subtemporada, tipo:norm.tipo, locacion:norm.locacion, cantidad:norm.cantidad}, idx);
-        if(ok){
-          added++;
-          Object.entries(SIMPLE_FIELD_TO_CATALOG).forEach(([field,listName])=>{ if(addToCatalog(listName, norm[field])) newVars++; });
-          if(!findTemporada(norm.temporada) && addTemporada(norm.temporada)) newVars++;
-          if(norm.subtemporada && addSubtemporada(norm.temporada, norm.subtemporada)) newVars++;
-          const modelResult = addModel(norm.modelo, norm.temporada, norm.subtemporada, norm.codigo, undefined, norm.tipo);
-          if(modelResult === true || modelResult === 'codigo-completado') newVars++;
-          if(modelResult === 'codigo-duplicado'){
-            const owner = findModelByCodigo(norm.codigo);
-            codigoConflicts.push(`código "${escapeHtml(String(norm.codigo))}" (fila de ${escapeHtml(String(norm.modelo))}) ya pertenece a ${owner ? escapeHtml(owner.nombre)+' ('+escapeHtml(owner.temporada)+')' : 'otro modelo'}`);
-          }
-        } else skipped++;
-      });
-      const saved = await persistAppData();
-      if(!saved){
-        items = JSON.parse(prevItems); catalog = JSON.parse(prevCatalog);
-        msgBox.innerHTML = '<div class="msg err">La carga NO se guardó, así que no se cargó ninguna fila. Mirá el aviso rojo de arriba para ver el motivo.</div>';
+      const range = ws['!ref'] ? XLSX.utils.decode_range(ws['!ref']) : {s:{r:0}};
+      const aoa = XLSX.utils.sheet_to_json(ws, {header:1, defval:'', raw:true});
+      const parsed = parseStockRows(aoa, range.s.r);
+      if(parsed.error){
+        msgBox.innerHTML = `<div class="msg err">${escapeHtml(parsed.error)}</div>`;
         $('#excel-file').value = '';
-        renderAll();
         return;
       }
-      let html = `<div class="msg ok">${added} filas cargadas${skipped?`, ${skipped} filas omitidas por datos incompletos`:''}${newVars?`, ${newVars} valores nuevos agregados a Variables`:''}.</div>`;
-      if(codigoConflicts.length){
-        html += `<div class="msg err" style="margin-top:8px;">Código de producto duplicado — no se asignó en estos casos: ${codigoConflicts.join('; ')}. El stock de esas filas sí se cargó, pero revisá el código en Variables → Modelos.</div>`;
-      }
-      msgBox.innerHTML = html;
-      $('#excel-file').value = '';
-      renderAll();
+      pendingImport = {fileName: file.name, parsed};
+      renderImportPreview();
     }catch(err){
-      msgBox.innerHTML = '<div class="msg err">No se pudo leer el archivo. Verificá que sea un .xlsx válido con las columnas correctas.</div>';
+      console.error('No se pudo leer el archivo', err);
+      msgBox.innerHTML = '<div class="msg err">No se pudo leer el archivo. Verificá que sea un .xlsx válido, con el mismo formato que "Descargar Excel".</div>';
+      $('#excel-file').value = '';
     }
   });
+  $$('input[name="import-mode"]').forEach(r => r.addEventListener('change', renderImportPreview));
 
   // ---------- Variables: Modelos (custom, temporada tied to model) ----------
   let modelosSearchQuery = '';
