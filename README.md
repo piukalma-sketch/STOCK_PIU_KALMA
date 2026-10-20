@@ -167,6 +167,13 @@ atrás del otro.
    Authentication → Settings → User actions podés desactivar también el
    registro libre de cuentas.
 
+Comprobar las reglas (opcional, 2 minutos): en Firestore Database →
+Rules → **Rules playground**, simulá un *get* sobre `/appdata/shared`
+marcando "Authenticated" con el UID de tu cuenta de administrador (tiene
+que dar *Allowed*) y después con un UID cualquiera que no tenga ficha
+(tiene que dar *Denied*). Las reglas se validaron con el analizador
+oficial de Firebase, pero no se pudieron correr contra el emulador.
+
 Si te quedás afuera (por ejemplo, desactivaste al único administrador
 desde la consola), se arregla desde Firestore Database → Data →
 `users` → tu documento: `active` = `true` y `role` = `admin`.
