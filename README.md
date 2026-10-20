@@ -21,9 +21,10 @@ más abajo.
    base de datos" → modo producción → elegí una región (cualquiera
    cercana a Argentina, ej. `southamerica-east1`).
 3. Andá a **Build → Authentication** → "Comenzar" → pestaña **Sign-in
-   method** → activá el proveedor **Anónimo**. (Esto es lo que hace que
-   cualquiera que abra la página pueda leer y escribir el stock, sin
-   tener que crearse una cuenta — como ya funcionaba antes.)
+   method** → activá el proveedor **Correo electrónico/contraseña**
+   (solo la primera opción; "Vínculo de correo electrónico" no hace
+   falta). Con esto cada persona entra con su propio correo y
+   contraseña. Ver "Usuarios y contraseñas" más abajo.
 
 No hace falta activar Storage ni ningún plan de facturación (Blaze):
 esta versión guarda todo, incluidas las fotos, dentro de Firestore, que
@@ -114,12 +115,65 @@ dispositivo.
   o mejor, porque ya no corre dentro de un iframe con restricciones: en
   un sitio propio con HTTPS (que Vercel da gratis) el navegador pide el
   permiso de cámara de forma normal.
-- **No hay "una cuenta por persona"**: todos los que entran a la URL
-  comparten el mismo login anónimo y el mismo stock, tal como estaba
-  configurado hasta ahora. Si en algún momento querés separar accesos
-  (por ejemplo, un login con contraseña para el local y otro para vos),
-  avisame y lo armamos — Firebase Authentication lo soporta sin
-  rehacer nada de lo demás.
+- **Cada persona entra con su correo y contraseña** (antes entraba
+  cualquiera que tuviera la URL). Todos los usuarios activos comparten
+  el mismo stock. Ver la sección siguiente.
+
+## Usuarios y contraseñas
+
+- **Pantalla de ingreso**: al abrir la página se pide correo y
+  contraseña. "Olvidé mi contraseña" manda un mail para elegir una
+  nueva, y "Cambiar contraseña" (arriba, al lado del correo) hace lo
+  mismo estando adentro.
+- **Dos roles**: *Administrador* (además de usar el stock, ve la solapa
+  **Usuarios**: crea usuarios, los desactiva/activa y les da o quita el
+  rol de administrador) y *Usuario* (solo usa el stock).
+- **Crear a alguien**: Usuarios → correo + contraseña inicial (mínimo 6
+  caracteres) → "Crear usuario". Pasale la contraseña por un canal
+  privado; después puede cambiarla.
+- **Desactivar** a alguien le saca el acceso al instante sin borrar nada
+  (se puede volver a activar). No se borran cuentas desde la página.
+  Un administrador no puede desactivarse ni cambiarse el rol a sí mismo.
+- Las reglas (`firestore.rules`) hacen que solo pueda leer o escribir
+  quien tenga una *ficha* activa en la colección `users`. Una cuenta
+  creada en Firebase sin ficha no ve nada.
+
+### Puesta en marcha (una sola vez, en este orden)
+
+Antes de empezar: este cambio **saca el acceso anónimo**. Hasta que
+hagas los pasos 4 y 5, nadie va a poder entrar, así que hacelos uno
+atrás del otro.
+
+1. **Activar el método de acceso**: Firebase → Authentication → Sign-in
+   method → **Correo electrónico/contraseña** → Habilitar → Guardar.
+2. **Crear tu cuenta de administrador**: Authentication → Users →
+   **Add user** → tu correo y una contraseña. Copiá el **User UID** que
+   aparece en la lista (una cadena larga de letras y números).
+3. **Crear tu ficha**: Firestore Database → Data → **Start collection**
+   → ID de colección `users` → ID de documento: **pegá el User UID** →
+   campos (respetá mayúsculas/minúsculas):
+   - `email` (string): tu correo
+   - `role` (string): `admin`
+   - `active` (boolean): `true`
+4. **Publicar la página** (mergear el cambio y esperar el deploy de
+   Vercel).
+5. **Publicar las reglas**: Firestore Database → Rules → pegá el
+   contenido de `firestore.rules` → **Publish** (o
+   `firebase deploy --only firestore:rules`).
+6. Entrá a la página con tu correo y contraseña. En **Usuarios** creá al
+   resto.
+7. Recomendado: Authentication → Sign-in method → **Anónimo** →
+   deshabilitar (ya no se usa). Si tu consola lo ofrece, en
+   Authentication → Settings → User actions podés desactivar también el
+   registro libre de cuentas.
+
+Si te quedás afuera (por ejemplo, desactivaste al único administrador
+desde la consola), se arregla desde Firestore Database → Data →
+`users` → tu documento: `active` = `true` y `role` = `admin`.
+
+Nota de costo: las reglas leen la ficha de quien consulta (1 lectura
+extra por operación). Con el uso de este sistema sigue muy por debajo
+de las 50.000 lecturas diarias gratis del plan Spark.
 
 ## Sobre las fotos (sin Firebase Storage)
 

@@ -157,6 +157,25 @@
   #loading{padding:60px 0; text-align:center; color:var(--ink-soft); font-size:13.5px;}
   .hint{font-size:12px; color:var(--ink-soft); margin-top:8px;}
   .divider{height:1px; background:var(--line); margin:22px 0;}
+
+  /* Acceso con usuario y contraseña */
+  #login-screen{display:none; padding:44px 0 20px;}
+  .login-card{max-width:400px; margin:0 auto;}
+  .login-card h2{font-size:22px; margin-bottom:4px;}
+  .login-card .hint{margin:0 0 16px;}
+  #userbar{display:none; align-items:center; gap:12px; flex-wrap:wrap; font-size:12.5px; color:var(--ink-soft); padding-bottom:4px;}
+  #userbar .who{font-family:'IBM Plex Mono', monospace; color:var(--ink);}
+  .link-btn{background:none; border:none; padding:0; font:inherit; color:var(--ink-soft); text-decoration:underline; cursor:pointer;}
+  .link-btn:hover{color:var(--ink);}
+  .check{display:flex; gap:8px; align-items:center; text-transform:none; letter-spacing:0; font-size:13px; font-weight:400; color:var(--ink); cursor:pointer; margin:0 0 14px;}
+  .check input{width:auto; margin:0;}
+  .users-table{width:100%; border-collapse:collapse; font-size:13px;}
+  .users-table th{text-align:left; font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-soft); padding:8px 10px; border-bottom:1px solid var(--line);}
+  .users-table td{padding:10px; border-bottom:1px solid var(--line); vertical-align:middle;}
+  .users-table .acts{display:flex; gap:14px; flex-wrap:wrap;}
+  .badge-role{display:inline-block; padding:2px 9px; border-radius:999px; font-size:11px; background:var(--paper-dim); border:1px solid var(--line);}
+  .badge-role.admin{background:var(--ink); color:var(--paper); border-color:var(--ink);}
+  .badge-role.off{background:#FBE6E5; color:var(--danger); border-color:#F0C9C7;}
 </style>
 </head>
 <body>
@@ -169,16 +188,44 @@
         <div class="sub">Modelo · Color · Talle · Temporada · Locación</div>
       </div>
     </div>
+    <div id="userbar">
+      <span class="who" id="userbar-email"></span>
+      <button class="link-btn" id="btn-change-pass" type="button">Cambiar contraseña</button>
+      <button class="link-btn" id="btn-logout" type="button">Salir</button>
+    </div>
   </header>
 
-  <nav class="tabs">
+  <nav class="tabs" style="display:none;">
     <button data-tab="inventario" class="active">Inventario</button>
     <button data-tab="variables">Variables</button>
     <button data-tab="transferir">Transferir</button>
     <button data-tab="catalogo">Catálogo</button>
+    <button data-tab="usuarios" id="tab-usuarios" style="display:none;">Usuarios</button>
   </nav>
 
-  <div id="loading">Cargando stock…</div>
+  <div id="loading">Cargando…</div>
+
+  <!-- ================= INGRESO ================= -->
+  <div id="login-screen">
+    <div class="card login-card">
+      <div id="login-form-box">
+        <h2>Ingresá a Stock</h2>
+        <p class="hint">Usá el correo y la contraseña que te dio el administrador.</p>
+        <form id="login-form" novalidate>
+          <div class="field"><label for="login-email">Correo</label><input id="login-email" type="email" autocomplete="username" autocapitalize="off" spellcheck="false"></div>
+          <div class="field"><label for="login-pass">Contraseña</label><input id="login-pass" type="password" autocomplete="current-password"></div>
+          <div id="login-msg"></div>
+          <button class="primary" id="login-btn" type="submit" style="width:100%;">Entrar</button>
+        </form>
+        <p class="hint" style="margin:14px 0 0; text-align:center;"><button class="link-btn" id="login-forgot" type="button">Olvidé mi contraseña</button></p>
+      </div>
+      <div id="noaccess-box" style="display:none;">
+        <h2>Sin acceso</h2>
+        <p class="hint" id="noaccess-text"></p>
+        <button class="secondary" id="noaccess-out" type="button">Salir</button>
+      </div>
+    </div>
+  </div>
 
   <main id="main-content" style="display:none;">
 
@@ -335,6 +382,25 @@
       </div>
     </section>
 
+    <!-- ================= USUARIOS (solo administradores) ================= -->
+    <section class="panel" data-panel="usuarios">
+      <div class="card" style="max-width:720px;">
+        <h3 style="font-size:17px;">Crear usuario</h3>
+        <p class="hint" style="margin:6px 0 14px;">La persona entra con este correo y esta contraseña (mínimo 6 caracteres). Pasale la contraseña por un canal privado; después puede cambiarla con "Cambiar contraseña".</p>
+        <div class="grid2">
+          <div class="field"><label for="nu-email">Correo</label><input id="nu-email" type="email" autocomplete="off" autocapitalize="off" spellcheck="false"></div>
+          <div class="field"><label for="nu-pass">Contraseña inicial</label><input id="nu-pass" type="text" autocomplete="off" spellcheck="false"></div>
+        </div>
+        <label class="check"><input type="checkbox" id="nu-admin"> Es administrador (puede crear y desactivar usuarios)</label>
+        <button class="primary" id="btn-crear-usuario" type="button">Crear usuario</button>
+        <div id="usuarios-msg" style="margin-top:14px;"></div>
+      </div>
+      <div class="card" style="max-width:720px;">
+        <h3 style="font-size:17px; margin-bottom:12px;">Usuarios</h3>
+        <div id="usuarios-list"></div>
+      </div>
+    </section>
+
     <!-- ================= TRANSFERIR ================= -->
     <section class="panel" data-panel="transferir">
       <div class="card" style="max-width:560px;">
@@ -446,15 +512,18 @@
 <script type="module">
 // ===================== Firebase (reemplaza el guardado de Claude) =====================
 // 1) Creá un proyecto en https://console.firebase.google.com
-// 2) Activá Firestore Database y, en Authentication > Sign-in method, el proveedor "Anonymous".
+// 2) Activá Firestore Database y, en Authentication > Sign-in method, el proveedor "Correo electrónico/contraseña" (ver README).
 // (Las fotos se guardan comprimidas directamente en Firestore, no se usa Storage ni se necesita plan de pago.)
 // 3) Pegá acá abajo la config de tu proyecto (Configuración del proyecto > tus apps > SDK setup and configuration).
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { initializeApp, getApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
   getFirestore, doc, getDoc, setDoc, deleteDoc,
   onSnapshot as fsOnSnapshot, collection, getDocs
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+  getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut as fbSignOut,
+  createUserWithEmailAndPassword, sendPasswordResetEmail
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDQODjJytY4-GT_c9cwVZnda8uatV26J-A",
@@ -504,6 +573,44 @@ function wrapCollectionRef(ref){
     }
   };
 }
+
+// ---------- Acceso con usuario y contraseña (Firebase Authentication: correo + contraseña) ----------
+// La ficha de cada persona vive en Firestore: users/{uid} = {email, role: 'admin'|'user', active: true|false}.
+// Las reglas de Firestore (firestore.rules) solo dejan entrar a quien tenga ficha activa.
+const authApi = {
+  onChange(cb){ return onAuthStateChanged(fbAuth, cb); },
+  signIn(email, pass){ return signInWithEmailAndPassword(fbAuth, email, pass); },
+  signOut(){ return fbSignOut(fbAuth); },
+  sendReset(email){ return sendPasswordResetEmail(fbAuth, email); },
+  profileRef(uid){ return wrapDocRef(doc(fsDb, 'users', uid)); },
+  usersCol(){ return wrapCollectionRef(collection(fsDb, 'users')); },
+  // Crear una cuenta desde la sesión del administrador sin cerrar su sesión: se usa una segunda "app"
+  // de Firebase solo para el alta (createUserWithEmailAndPassword inicia sesión con la cuenta nueva).
+  async createUser(email, password){
+    let helper;
+    try{ helper = getApp('alta-usuarios'); }catch(e){ helper = initializeApp(firebaseConfig, 'alta-usuarios'); }
+    const hAuth = getAuth(helper);
+    try{
+      try{
+        const cred = await createUserWithEmailAndPassword(hAuth, email, password);
+        return { uid: cred.user.uid, existing: false };
+      }catch(e){
+        if(e && e.code === 'auth/email-already-in-use'){
+          // La cuenta ya existe en Authentication (por ejemplo, quedó sin ficha): si la contraseña coincide, se vincula.
+          try{
+            const cred = await signInWithEmailAndPassword(hAuth, email, password);
+            return { uid: cred.user.uid, existing: true };
+          }catch(e2){
+            throw Object.assign(new Error('Ese correo ya tiene una cuenta con otra contraseña.'), { code: 'app/existing-other-password' });
+          }
+        }
+        throw e;
+      }
+    } finally {
+      try{ await fbSignOut(hAuth); }catch(e){}
+    }
+  }
+};
 
 (function(){
   const $ = (sel, ctx) => (ctx||document).querySelector(sel);
@@ -619,10 +726,7 @@ function wrapCollectionRef(ref){
     dbApi = null; assetsApi = null; downloadsApi = null; appDocRef = null;
     if(!firebaseReady) return;
     try{
-      await new Promise((resolve)=>{
-        const unsub = onAuthStateChanged(fbAuth, user=>{ if(user){ unsub(); resolve(); } });
-        signInAnonymously(fbAuth).catch(()=> resolve());
-      });
+      // Ya no se entra como anónimo: la sesión la maneja el login con correo y contraseña (ver "Acceso").
       dbApi = true;
       appDocRef = wrapDocRef(doc(fsDb, 'appdata', 'shared'));
       assetsApi = {
@@ -2292,6 +2396,7 @@ function wrapCollectionRef(ref){
       if(btn.dataset.tab === 'transferir'){ renderTransferSelect(); renderFaltantesSelects(); renderFaltantesTable(); }
       if(btn.dataset.tab === 'variables'){ renderModelosCard(); renderVariableCards(); renderTemporadasCard(); }
       if(btn.dataset.tab === 'catalogo'){ fillCatalogoSelects(); renderCatalogoGrid(); }
+      if(btn.dataset.tab === 'usuarios'){ renderUsersPanel(); }
     });
   });
   $$('nav.subtabs').forEach(nav=>{
@@ -2344,20 +2449,208 @@ function wrapCollectionRef(ref){
     }
   }
 
-  async function init(){
-    await initRuntime();
+  // ---------- Acceso: ingreso con correo y contraseña ----------
+  let currentUser = null;     // {uid, email}
+  let currentProfile = null;  // ficha de Firestore: {email, role, active}
+  const isAdminUser = ()=> !!(currentProfile && currentProfile.role === 'admin');
+
+  function authErrorMsg(e){
+    const code = (e && e.code) || '';
+    switch(code){
+      case 'auth/invalid-credential': case 'auth/wrong-password': case 'auth/user-not-found': case 'auth/invalid-login-credentials':
+        return 'Correo o contraseña incorrectos.';
+      case 'auth/invalid-email': return 'El correo no es válido.';
+      case 'auth/missing-password': return 'Escribí la contraseña.';
+      case 'auth/too-many-requests': return 'Demasiados intentos. Esperá unos minutos o pedí un mail para cambiar la contraseña.';
+      case 'auth/network-request-failed': return 'No hay conexión. Revisá tu internet.';
+      case 'auth/user-disabled': return 'Este usuario está deshabilitado.';
+      case 'auth/operation-not-allowed': return 'Falta activar "Correo electrónico/contraseña" en Firebase (Authentication → Método de acceso).';
+      case 'auth/weak-password': return 'La contraseña es muy corta (mínimo 6 caracteres).';
+      case 'auth/email-already-in-use': return 'Ese correo ya tiene una cuenta.';
+      case 'app/existing-other-password': return 'Ese correo ya tiene una cuenta en Firebase con otra contraseña. Usá "Mail para cambiar contraseña" o borrala desde la consola de Firebase y volvé a crearla.';
+      case 'permission-denied': return 'Firestore rechazó la operación por permisos (reglas). Revisá que las reglas publicadas sean las de firestore.rules.';
+    }
+    return String((e && e.message) || e || 'Error desconocido');
+  }
+
+  function showAuthScreen(mode, info){ // mode: 'login' | 'noaccess' | 'fatal'
+    $('#loading').style.display = 'none';
+    $('#main-content').style.display = 'none';
+    $('nav.tabs').style.display = 'none';
+    $('#userbar').style.display = 'none';
+    $('#login-screen').style.display = 'block';
+    $('#login-form-box').style.display = mode === 'login' ? 'block' : 'none';
+    $('#noaccess-box').style.display = mode === 'login' ? 'none' : 'block';
+    if(mode === 'noaccess' || mode === 'fatal'){
+      $('#noaccess-text').textContent = (info && info.text) || '';
+      $('#noaccess-out').style.display = mode === 'noaccess' ? '' : 'none';
+    }
+    if(mode === 'login'){ const pw = $('#login-pass'); if(pw) pw.value = ''; }
+  }
+
+  // Ficha del usuario en Firestore. ok=false => no puede entrar.
+  async function loadProfile(user){
+    try{
+      const snap = await authApi.profileRef(user.uid).get();
+      if(!snap.exists) return {ok:false, text:`Tu usuario (${user.email}) todavía no tiene acceso a Stock. Pedile al administrador que lo active.`};
+      const data = snap.data() || {};
+      if(data.active !== true) return {ok:false, text:`Tu usuario (${user.email}) está desactivado. Pedile al administrador que lo vuelva a activar.`};
+      return {ok:true, data};
+    }catch(e){
+      console.error('No se pudo leer la ficha del usuario', e);
+      return {ok:false, text:'No se pudo verificar tu acceso: ' + authErrorMsg(e)};
+    }
+  }
+
+  // Resuelve cuando hay una persona con sesión iniciada y con acceso activo.
+  function requireLogin(){
+    return new Promise(resolve=>{
+      let authorized = false;
+      authApi.onChange(async user=>{
+        if(user && user.isAnonymous){ try{ await authApi.signOut(); }catch(e){} return; } // sesiones anónimas viejas: ya no sirven
+        if(!user){
+          if(authorized){ location.reload(); return; } // cerró sesión: se vuelve a empezar de cero
+          showAuthScreen('login'); return;
+        }
+        if(authorized) return;
+        $('#login-screen').style.display = 'none';
+        $('#loading').textContent = 'Verificando acceso…'; $('#loading').style.display = 'block';
+        const prof = await loadProfile(user);
+        if(!prof.ok){ showAuthScreen('noaccess', {text: prof.text}); return; }
+        authorized = true;
+        currentUser = {uid: user.uid, email: user.email};
+        currentProfile = prof.data;
+        resolve();
+      });
+    });
+  }
+
+  $('#login-form').addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const email = $('#login-email').value.trim(), pass = $('#login-pass').value;
+    const msg = $('#login-msg'), btn = $('#login-btn');
+    msg.innerHTML = '';
+    if(!email || !pass){ msg.innerHTML = '<div class="msg err">Escribí tu correo y tu contraseña.</div>'; return; }
+    btn.disabled = true; btn.textContent = 'Entrando…';
+    try{ await authApi.signIn(email, pass); }
+    catch(err){ msg.innerHTML = `<div class="msg err">${escapeHtml(authErrorMsg(err))}</div>`; }
+    finally{ btn.disabled = false; btn.textContent = 'Entrar'; }
+  });
+  $('#login-forgot').addEventListener('click', async ()=>{
+    const email = $('#login-email').value.trim(), msg = $('#login-msg');
+    if(!email){ msg.innerHTML = '<div class="msg err">Escribí tu correo arriba y volvé a tocar "Olvidé mi contraseña".</div>'; return; }
+    try{
+      await authApi.sendReset(email);
+      msg.innerHTML = `<div class="msg ok">Si ${escapeHtml(email)} tiene una cuenta, le llega un mail para elegir una contraseña nueva. Revisá también el correo no deseado.</div>`;
+    }catch(err){ msg.innerHTML = `<div class="msg err">${escapeHtml(authErrorMsg(err))}</div>`; }
+  });
+  $('#noaccess-out').addEventListener('click', ()=>{ authApi.signOut().catch(()=>{}); });
+  $('#btn-logout').addEventListener('click', ()=>{ authApi.signOut().catch(()=>{}); });
+  $('#btn-change-pass').addEventListener('click', async ()=>{
+    if(!currentUser) return;
+    try{
+      await authApi.sendReset(currentUser.email);
+      showSyncBanner('info-banner', `Te mandamos un mail a ${currentUser.email} para cambiar la contraseña.`, '#3A3835');
+    }catch(err){ showSyncBanner('info-banner', 'No se pudo mandar el mail: ' + authErrorMsg(err), '#C25450'); }
+    setTimeout(()=> showSyncBanner('info-banner', ''), 9000);
+  });
+
+  // ---------- Usuarios (solo administradores) ----------
+  let usersCache = [];
+  async function loadUsers(){
+    const snap = await authApi.usersCol().get();
+    usersCache = snap.docs.map(d => Object.assign({}, d.data(), {uid: d.id}))
+      .sort((a,b)=> String(a.email||'').localeCompare(String(b.email||''), 'es'));
+  }
+  async function saveUserDoc(u, changes){
+    const data = Object.assign({}, u, changes); delete data.uid;
+    await authApi.usersCol().doc(u.uid).set(data);
+  }
+
+  async function renderUsersPanel(){
+    const box = $('#usuarios-list');
+    if(!isAdminUser()){ box.innerHTML = '<div class="empty">Solo los administradores pueden ver esta pantalla.</div>'; return; }
+    box.innerHTML = '<div class="empty">Cargando usuarios…</div>';
+    try{ await loadUsers(); }
+    catch(e){ console.error('No se pudo leer la lista de usuarios', e); box.innerHTML = `<div class="msg err">No se pudo leer la lista de usuarios: ${escapeHtml(authErrorMsg(e))}</div>`; return; }
+    if(!usersCache.length){ box.innerHTML = '<div class="empty">Todavía no hay usuarios.</div>'; return; }
+    box.innerHTML = `<table class="users-table"><thead><tr><th>Correo</th><th>Rol</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>${usersCache.map(u=>{
+      const me = currentUser && u.uid === currentUser.uid;
+      return `<tr data-uid="${escapeHtml(u.uid)}">
+        <td class="mono" style="font-size:12.5px;">${escapeHtml(u.email || u.uid)}${me ? ' <span class="hint">(vos)</span>' : ''}</td>
+        <td><span class="badge-role ${u.role === 'admin' ? 'admin' : ''}">${u.role === 'admin' ? 'Administrador' : 'Usuario'}</span></td>
+        <td>${u.active === true ? 'Activo' : '<span class="badge-role off">Desactivado</span>'}</td>
+        <td><div class="acts">
+          ${me ? '' : `<button class="link-btn" data-user-act="role">${u.role === 'admin' ? 'Quitar administrador' : 'Hacer administrador'}</button>
+          <button class="link-btn" data-user-act="active">${u.active === true ? 'Desactivar' : 'Activar'}</button>`}
+          <button class="link-btn" data-user-act="reset">Mail para cambiar contraseña</button>
+        </div></td></tr>`;
+    }).join('')}</tbody></table>`;
+    $$('#usuarios-list [data-user-act]').forEach(btn=>{
+      btn.addEventListener('click', async ()=>{
+        const uid = btn.closest('tr').dataset.uid, u = usersCache.find(x => x.uid === uid), act = btn.dataset.userAct;
+        const msg = $('#usuarios-msg'); msg.innerHTML = '';
+        if(!u) return;
+        const run = async (fn, okText)=>{
+          try{ await fn(); msg.innerHTML = `<div class="msg ok">${escapeHtml(okText)}</div>`; }
+          catch(e){ console.error('Acción sobre usuario falló', e); msg.innerHTML = `<div class="msg err">${escapeHtml(authErrorMsg(e))}</div>`; }
+          await renderUsersPanel();
+        };
+        if(act === 'reset') return run(()=> authApi.sendReset(u.email), `Se mandó un mail a ${u.email} para cambiar la contraseña.`);
+        if(act === 'role') return run(()=> saveUserDoc(u, {role: u.role === 'admin' ? 'user' : 'admin'}), u.role === 'admin' ? `${u.email} ya no es administrador.` : `${u.email} ahora es administrador.`);
+        if(act === 'active'){
+          if(u.active === true) return showConfirmModal(`¿Desactivar a ${u.email}? Va a dejar de poder entrar a Stock (podés volver a activarlo cuando quieras).`, ()=> run(()=> saveUserDoc(u, {active:false}), `${u.email} fue desactivado.`));
+          return run(()=> saveUserDoc(u, {active:true}), `${u.email} fue activado.`);
+        }
+      });
+    });
+  }
+
+  $('#btn-crear-usuario').addEventListener('click', async ()=>{
+    const msg = $('#usuarios-msg'), btn = $('#btn-crear-usuario');
+    const email = $('#nu-email').value.trim().toLowerCase(), pass = $('#nu-pass').value, admin = $('#nu-admin').checked;
+    msg.innerHTML = '';
+    if(!isAdminUser()){ msg.innerHTML = '<div class="msg err">Solo los administradores pueden crear usuarios.</div>'; return; }
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ msg.innerHTML = '<div class="msg err">Escribí un correo válido.</div>'; return; }
+    if(pass.length < 6){ msg.innerHTML = '<div class="msg err">La contraseña tiene que tener al menos 6 caracteres.</div>'; return; }
+    btn.disabled = true;
+    try{
+      const { uid, existing } = await authApi.createUser(email, pass);
+      const prev = await authApi.profileRef(uid).get();
+      if(prev.exists){ msg.innerHTML = '<div class="msg err">Ese usuario ya existe en la lista.</div>'; return; }
+      await authApi.profileRef(uid).set({ email, role: admin ? 'admin' : 'user', active: true, createdAt: Date.now(), createdBy: currentUser ? currentUser.email : '' });
+      $('#nu-email').value = ''; $('#nu-pass').value = ''; $('#nu-admin').checked = false;
+      msg.innerHTML = `<div class="msg ok">Listo: ${escapeHtml(email)} ya puede entrar${existing ? ' (se vinculó una cuenta que ya existía en Firebase)' : ''}. Pasale la contraseña por un canal privado.</div>`;
+      await renderUsersPanel();
+    }catch(e){
+      console.error('No se pudo crear el usuario', e);
+      msg.innerHTML = `<div class="msg err">No se pudo crear el usuario: ${escapeHtml(authErrorMsg(e))}</div>`;
+    }finally{ btn.disabled = false; }
+  });
+
+  // Arranque de la app una vez que hay una persona con acceso.
+  async function startApp(){
+    $('#login-screen').style.display = 'none';
+    $('#loading').textContent = 'Cargando stock…'; $('#loading').style.display = 'block';
+    $('#userbar-email').textContent = currentUser.email;
+    $('#userbar').style.display = 'flex';
+    $('#tab-usuarios').style.display = isAdminUser() ? '' : 'none';
+    $('nav.tabs').style.display = '';
     await startSync();
     await migrateCatalogFromItemsIfEmpty();
     renderAll();
-    if(!appDocRef){
-      const warn = document.createElement('div');
-      warn.className = 'msg err';
-      warn.style.margin = '0 0 14px';
-      warn.textContent = 'No se pudo conectar el guardado compartido en esta vista: los cambios no se van a guardar ni se van a ver reflejados para el resto.';
-      $('#main-content').prepend(warn);
-    }
     $('#loading').style.display = 'none';
     $('#main-content').style.display = 'block';
+  }
+
+  async function init(){
+    await initRuntime();
+    if(!firebaseReady || !appDocRef){
+      showAuthScreen('fatal', {text: 'No se pudo conectar con Firebase, así que no se puede ingresar. Revisá la configuración (firebaseConfig) en index.html.'});
+      return;
+    }
+    await requireLogin();
+    await startApp();
   }
   init();
 })();
