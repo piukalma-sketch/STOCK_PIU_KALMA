@@ -240,3 +240,23 @@ sitio (por ejemplo `/catalogo`), leyendo los mismos datos de Firebase.
 > Importante al actualizar: el formato nuevo no lo entiende la versión vieja de la
 > página. Después de publicar, cerrá y volvé a abrir la app en todos los
 > dispositivos (una pestaña vieja que siga abierta vería el stock vacío).
+
+## Carga masiva: mismo formato que "Descargar Excel" y dos modos
+
+- **Formato.** La carga masiva lee el mismo Excel que genera "Descargar Excel":
+  una fila por combinación de Modelo, Tipo, Temporada, Subtemporada, Color y
+  Locación, y una columna por cada talle con la cantidad. La columna Total y la
+  fila TOTAL se ignoran. Son obligatorias Modelo, Temporada, Color y Locación.
+  Para volver a subir un Excel descargado, hay que descargarlo con todas las
+  variables tildadas. La planilla modelo también tiene este formato. El formato
+  anterior (una fila por talle, columnas `talle` y `cantidad`, y `codigo`
+  opcional) se sigue entendiendo.
+- **Actualizar items.** Solo se tocan los items que están en el archivo: su
+  cantidad pasa a ser la del archivo (si es 0, se borra esa línea) y los que no
+  existían se crean. Lo demás se conserva. Una celda vacía no cambia nada. Ojo:
+  la cantidad del archivo *reemplaza* a la actual; antes se sumaba.
+- **Reemplazar todo el stock.** Se borra todo el stock cargado y queda solo lo
+  del archivo. Modelos, precios, códigos y fotos no se tocan. Pide confirmación,
+  y si el archivo no trae ninguna cantidad mayor a 0 no borra nada.
+- Antes de aplicar se muestra una vista previa con lo que va a pasar. Si el
+  guardado falla, el stock queda como estaba.
