@@ -1,26 +1,60 @@
 rules_version = '2';
 
-// Reglas para Firestore. Cualquiera que abra la página hace login anónimo
-// automáticamente (ver index.html), así que "estar autenticado" alcanza
-// como control básico: mantiene afuera a cualquiera que no haya abierto
-// la app, pero NO distingue entre las personas que sí la usan (todas
-// comparten el mismo stock, que es justamente lo que se buscaba).
+// Acceso con usuario y contraseña (Firebase Authentication, correo + contraseña).
 //
-// Si en algún momento querés que cada persona tenga su propio login
-// (usuario/contraseña o Google) en vez de anónimo, estas mismas reglas
-// siguen sirviendo sin cambios.
+// Cada persona tiene una "ficha" en users/{uid} = { email, role: 'admin' | 'user', active: true | false }.
+//
+//  - Para leer o escribir el stock, el catálogo y las fotos hace falta una ficha con active == true.
+//  - Solo los administradores (role == 'admin' y active == true) pueden ver todas las fichas, crearlas o
+//    modificarlas. Un administrador no puede modificar su propia ficha (así no se puede dejar afuera solo).
+//  - Cada persona puede leer SU propia ficha (para que la app le diga "desactivado" en vez de fallar).
+//  - Una cuenta nueva de Authentication sin ficha no puede ver nada, ni crearse una ficha a sí misma.
+//  - Las fichas no se borran: se desactivan.
+//
+// La primera ficha de administrador se crea a mano desde la consola de Firebase (la consola no pasa por
+// estas reglas). Los pasos están en el README.
 
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Documento único donde vive todo: items, catálogo y últimas cargas.
+    function signedIn() {
+      return request.auth != null;
+    }
+    function profilePath(uid) {
+      return /databases/$(database)/documents/users/$(uid);
+    }
+    function hasProfile() {
+      return signedIn() && exists(profilePath(request.auth.uid));
+    }
+    function isActive() {
+      return hasProfile() && get(profilePath(request.auth.uid)).data.active == true;
+    }
+    function isAdmin() {
+      return isActive() && get(profilePath(request.auth.uid)).data.role == 'admin';
+    }
+    function validProfile() {
+      return request.resource.data.email is string
+        && request.resource.data.role in ['admin', 'user']
+        && request.resource.data.active is bool;
+    }
+
+    // Documento único donde vive todo: stock, catálogo y últimas cargas.
     match /appdata/shared {
-      allow read, write: if request.auth != null;
+      allow read, write: if isActive();
 
       // Fotos por combinación de modelo y color.
       match /photos/{photoId} {
-        allow read, write: if request.auth != null;
+        allow read, write: if isActive();
       }
+    }
+
+    // Fichas de usuario.
+    match /users/{uid} {
+      allow get: if signedIn() && request.auth.uid == uid;
+      allow get, list: if isAdmin();
+      allow create: if isAdmin() && validProfile();
+      allow update: if isAdmin() && request.auth.uid != uid && validProfile();
+      allow delete: if false;
     }
   }
 }
