@@ -48,6 +48,27 @@ service cloud.firestore {
       }
     }
 
+    // ---- Catálogo público (página /catalogo que se manda a los clientes por el chat) ----
+    // Es una copia reducida que publica la app: modelo, color, tipo, talles con stock, temporadas, precio y fotos.
+    // NO tiene cantidades ni locaciones. Cualquiera puede LEER estas colecciones (sin iniciar sesión), pero solo
+    // el personal con ficha activa puede escribirlas. El stock interno (appdata/*) sigue privado.
+    match /public_catalog/{id} {
+      allow read: if true;
+      allow write: if isActive();
+    }
+    match /public_photos/{id} {
+      allow read: if true;
+      allow write: if isActive();
+    }
+    // public_meta/filters: opciones de los filtros de la página pública (lectura pública).
+    // public_meta/sigs: control interno de qué ya se publicó (solo personal; entra por la regla de abajo).
+    match /public_meta/filters {
+      allow read: if true;
+    }
+    match /public_meta/{id} {
+      allow read, write: if isActive();
+    }
+
     // Fichas de usuario.
     match /users/{uid} {
       allow get: if signedIn() && request.auth.uid == uid;

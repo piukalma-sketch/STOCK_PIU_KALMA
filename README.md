@@ -207,13 +207,49 @@ Esto tiene algunas consecuencias a tener en cuenta:
   sumar Firebase Storage en cualquier momento sin tener que rehacer el
   resto de la app — avisame cuando llegue ese momento y lo armamos.
 
-## Próximo paso pendiente: catálogo público para compartir
+## Catálogo público para mandar por el chat (Meta / WhatsApp)
 
-Quedó pendiente una página aparte, pública, con el catálogo (foto +
-precio + galería de fotos por modelo) para mandar el link por
-Instagram sin exponer el stock interno. Una vez que esta base esté
-deployada y andando, armamos esa página como una segunda ruta del mismo
-sitio (por ejemplo `/catalogo`), leyendo los mismos datos de Firebase.
+Hay una página aparte, pública, en `/catalogo` (archivo `catalogo.html`): muestra
+foto, precio, talles disponibles y galería de fotos por modelo y color, sin
+usuario ni contraseña. **No muestra cantidades ni locaciones.**
+
+**Cómo se usa (desde el celular):** Catálogo → elegí los filtros (por ejemplo
+Talle 2) → arriba, en "Link para clientes", tocá **Compartir link** (abre el menú
+del celular: WhatsApp, Messenger, Instagram…) o **Copiar link**. El cliente abre
+algo como `https://tu-proyecto.vercel.app/catalogo?talle=2` y ve solo eso, con
+los filtros de Talle, Tipo, Color y Temporada para seguir mirando.
+**Ver como cliente** abre la página para comprobar cómo se ve.
+
+**Cómo se mantiene al día:** el stock interno sigue privado. La app publica una
+copia reducida en las colecciones `public_catalog`, `public_photos` y
+`public_meta` (lectura pública, escritura solo del personal; ver
+`firestore.rules`). Después de la primera publicación se actualiza sola unos
+segundos después de cambiar el stock, un precio o una foto (en cualquier
+dispositivo donde haya alguien con la app abierta). Un modelo y color aparece si
+tiene stock > 0 en cualquier locación, y se muestran los talles que tienen stock.
+
+### Puesta en marcha (una sola vez, en este orden)
+
+1. **Publicar la página** (mergear la rama y esperar el deploy de Vercel).
+2. **Publicar las reglas nuevas**: Firebase → Firestore Database → Rules → pegá
+   el contenido de `firestore.rules` → **Publish** (o
+   `firebase deploy --only firestore:rules`).
+3. Entrá a la app, solapa **Catálogo** y tocá **Publicar catálogo**. Copia los
+   datos y todas las fotos al catálogo público (con muchas fotos puede tardar un
+   minuto). Mientras no hagas este paso, el link muestra "El catálogo todavía no
+   está disponible".
+4. Probalo con **Ver como cliente** y mandate el link a vos mismo.
+
+Cuando algo no se vea al día, "Publicar catálogo" vuelve a copiar todo desde cero.
+
+### Costos y límites
+
+- Cada visita a la página lee los modelos del filtro (con `?talle=` solo los de
+  ese talle) más las fotos de las tarjetas que se ven (de a 12). El plan gratis
+  (Spark) permite 50.000 lecturas por día: alcanza para varios cientos de visitas
+  diarias. Si algún día no alcanza, se puede pasar las fotos a Firebase Storage.
+- La página tiene `noindex` (los buscadores no la listan): se comparte solo por link.
+- Las fotos públicas son las mismas, ya comprimidas, de Variables → Fotos.
 
 ## Cambios de guardado y velocidad (octubre 2026)
 

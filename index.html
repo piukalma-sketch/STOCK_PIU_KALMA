@@ -471,6 +471,18 @@
 
     <!-- ================= CATÁLOGO ================= -->
     <section class="panel" data-panel="catalogo">
+      <div class="card" style="max-width:960px; margin-bottom:16px;">
+        <h3 style="font-size:19px; margin-bottom:6px;">Link para clientes</h3>
+        <p class="hint" style="margin-top:0; margin-bottom:12px;">Elegí los filtros de abajo (por ejemplo talle 2) y mandá este link por el chat de Meta o WhatsApp: el cliente ve las fotos y los precios sin usuario ni contraseña, y no ve cantidades ni locaciones.</p>
+        <div class="field" style="margin-bottom:10px;"><label>Link con los filtros elegidos</label><input type="text" id="pub-link" readonly onfocus="this.select()"></div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button class="primary" type="button" id="pub-share">Compartir link</button>
+          <button class="secondary" type="button" id="pub-copy">Copiar link</button>
+          <button class="secondary" type="button" id="pub-open">Ver como cliente</button>
+          <button class="secondary" type="button" id="pub-publish">Publicar catálogo</button>
+        </div>
+        <p class="hint" id="pub-status" style="margin:10px 0 0;"></p>
+      </div>
       <div class="card" style="max-width:960px;">
         <h3 style="font-size:19px; margin-bottom:6px;">Catálogo para mandar por Instagram</h3>
         <p class="hint" style="margin-top:0; margin-bottom:16px;">Filtrá por talle (y color o locación si querés) y te armamos las tarjetas con foto, precio y stock disponible, listas para compartir.</p>
@@ -674,6 +686,10 @@ const authApi = {
   // catalog.modelos: [{id, nombre, temporada}]  -- temporada is fixed at model creation
   let catalog = {modelos:[], colores:[], talles:[], locaciones:[], temporadas:[], tipos:[]};
   let photoCache = {}; // photoKey -> {modelo,color,dataUrl} or null
+  // Catálogo público (link para clientes): ver "Catálogo público" más abajo.
+  let pubSigs = null;       // firmas de lo ya publicado: id -> hash (null = todavía no se leyó)
+  let pubEnabled = null;    // null = sin saber, false = nunca se publicó, true = ya se publicó (se mantiene al día solo)
+  let pubTimer = null, pubRunning = false, pubDirty = false, pubLastAt = 0, pubCount = 0;
 
   const SIMPLE_FIELD_TO_CATALOG = {color:'colores', talle:'talles', locacion:'locaciones', tipo:'tipos'};
 
@@ -955,6 +971,7 @@ const authApi = {
     try{
       await appDocRef.set(payload);
       showSyncBanner('save-error-banner', '');
+      schedulePublishCatalog(); // mantiene al día el catálogo público (si ya se publicó una vez)
       return true;
     }catch(e){
       console.error('No se pudo guardar', e);
@@ -2587,6 +2604,7 @@ const authApi = {
     if(!col) return;
     if(nuevaLista.length){ await col.doc(key).set({modelo, color, photos: nuevaLista}); photoCache[key] = {modelo, color, photos: nuevaLista}; }
     else { await col.doc(key).delete(); photoCache[key] = null; }
+    mirrorPublicPhotos(key, modelo, color, nuevaLista); // copia para el catálogo público (no frena el guardado)
   }
 
   async function refreshCurrentPhoto(){
@@ -2711,6 +2729,7 @@ const authApi = {
   async function renderCatalogoGrid(){
     const grid = $('#catalogo-grid');
     if(!grid) return;
+    refreshPublicPanel();
     const talle = $('#cat-talle').value, color = $('#cat-color').value, loc = $('#cat-loc').value, temp = $('#cat-temp').value, tipo = $('#cat-tipo').value;
     const filtered = items.filter(it=>{
       if(it.cantidad<=0) return false;
@@ -2801,6 +2820,240 @@ const authApi = {
   ['#cat-talle','#cat-tipo','#cat-color','#cat-loc','#cat-temp'].forEach(sel=>{
     $(sel)?.addEventListener('change', renderCatalogoGrid);
   });
+
+  // ---------- Catálogo público (link para clientes) ----------
+  // Los clientes abren /catalogo?talle=2 sin usuario ni contraseña. Para no abrir el stock interno, la app publica una
+  // copia reducida en colecciones aparte que sí tienen lectura pública (ver firestore.rules):
+  //   public_catalog/{modelo~tipo~color} -> modelo, tipo, color, talles con stock, temporadas y precio (SIN cantidades ni locaciones)
+  //   public_photos/{photoKey}           -> las mismas fotos que se cargan en Variables → Fotos
+  //   public_meta/filters                -> opciones de los filtros de la página pública
+  //   public_meta/sigs                   -> (solo personal) firmas de lo ya publicado, para escribir únicamente lo que cambió
+  const PUB_CAT = 'public_catalog', PUB_PHOTOS = 'public_photos', PUB_META = 'public_meta';
+  function pubCol(name){ return fsDb ? wrapCollectionRef(collection(fsDb, name)) : null; }
+  function pubMetaRef(id){ return wrapDocRef(doc(fsDb, PUB_META, id)); }
+  function pubId(modelo, tipo, color){
+    return [modelo, tipo, color].map(v => String(v || '').trim().replace(/[\/\\.#$\[\]~]+/g, '-')).join('~');
+  }
+  function hashStr(s){
+    let h = 0x811c9dc5;
+    for(let i = 0; i < s.length; i++){ h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193); }
+    return (h >>> 0).toString(36) + '.' + s.length.toString(36);
+  }
+  async function runChunks(list, size, fn){
+    for(let i = 0; i < list.length; i += size) await Promise.all(list.slice(i, i + size).map(fn));
+  }
+
+  // Una entrada por modelo + tipo + color con stock > 0. Nunca incluye cantidades ni locaciones.
+  function buildPublicDocs(){
+    const groups = new Map();
+    items.forEach(it=>{
+      if(!(it.cantidad > 0)) return;
+      const tipo = it.tipo || '';
+      const id = pubId(it.modelo, tipo, it.color);
+      let g = groups.get(id);
+      if(!g){ g = {modelo: it.modelo, tipo, color: it.color, talles: new Set(), temporadas: new Set()}; groups.set(id, g); }
+      if(it.talle) g.talles.add(String(it.talle));
+      if(it.temporada) g.temporadas.add(String(it.temporada));
+    });
+    const docs = new Map();
+    groups.forEach((g, id)=>{
+      const p = priceForModelo(g.modelo, g.tipo);
+      const n = (p === '' || p === null || p === undefined) ? NaN : Number(p);
+      docs.set(id, {
+        modelo: g.modelo, tipo: g.tipo, color: g.color,
+        talles: Array.from(g.talles).sort(compareTalle),
+        temporadas: Array.from(g.temporadas).sort((a, b)=> collatorEs.compare(a, b)),
+        precio: Number.isFinite(n) ? n : null,
+        photoId: photoKey(g.modelo, g.color)
+      });
+    });
+    return docs;
+  }
+  function buildPublicFilters(docs){
+    const all = Array.from(docs.values());
+    const uniq = (f)=> Array.from(new Set(all.flatMap(d => Array.isArray(d[f]) ? d[f] : [d[f]]).filter(Boolean)));
+    const text = (a, b)=> collatorEs.compare(a, b);
+    return { talles: uniq('talles').sort(compareTalle), tipos: uniq('tipo').sort(text), colores: uniq('color').sort(text), temporadas: uniq('temporadas').sort(text) };
+  }
+
+  // Lee (una vez) si el catálogo público ya se publicó alguna vez. Devuelve true / false, o null si no se pudo leer.
+  async function loadPubState(){
+    if(pubEnabled !== null) return pubEnabled;
+    if(!fsDb) return null;
+    try{
+      const s = await pubMetaRef('sigs').get();
+      if(s.exists){
+        const d = s.data();
+        pubSigs = JSON.parse(d.sigs || '{}'); pubLastAt = d.updated || 0; pubCount = d.count || 0; pubEnabled = true;
+      } else { pubSigs = {}; pubEnabled = false; }
+    }catch(e){ console.warn('No se pudo leer el estado del catálogo público', e); }
+    return pubEnabled;
+  }
+
+  async function publishAllPhotos(){
+    const src = photosCollection(), dst = pubCol(PUB_PHOTOS);
+    if(!src || !dst) return;
+    const snap = await src.get();
+    const ids = new Set(), jobs = [];
+    snap.docs.forEach(d=>{
+      const data = d.data(), lista = photosOf(data);
+      ids.add(d.id);
+      photoCache[d.id] = data;
+      if(lista.length) jobs.push(()=> dst.doc(d.id).set({modelo: data.modelo, color: data.color, photos: lista}));
+    });
+    const old = await dst.get();
+    old.docs.forEach(d=>{ if(!ids.has(d.id) || !photosOf(photoCache[d.id]).length) jobs.push(()=> dst.doc(d.id).delete()); });
+    await runChunks(jobs, 4, f => f());
+  }
+
+  // Publica solo lo que cambió desde la última vez (force = reescribe todo; photos = vuelve a copiar todas las fotos).
+  async function publishCatalogData(opts){
+    const catCol = pubCol(PUB_CAT);
+    if(!catCol) throw new Error('Firebase no está disponible.');
+    if(!dataLoaded) throw new Error('Todavía no se pudieron leer los datos guardados.');
+    await loadPubState();
+    if(pubSigs === null) pubSigs = {};
+    const firstTime = pubEnabled !== true;
+    const next = buildPublicDocs();
+    const filters = buildPublicFilters(next);
+    const nextSigs = {}, toSet = [];
+    next.forEach((d, id)=>{
+      const sig = hashStr(JSON.stringify(d));
+      nextSigs[id] = sig;
+      if(opts.force || pubSigs[id] !== sig) toSet.push([id, d]);
+    });
+    const fSig = hashStr(JSON.stringify(filters));
+    nextSigs['~filters'] = fSig;
+    const toDel = Object.keys(pubSigs).filter(id => id !== '~filters' && !next.has(id));
+    if(opts.force || firstTime){
+      // limpieza de sobrantes que hayan quedado publicados sin registro
+      const snap = await catCol.get();
+      snap.docs.forEach(d=>{ if(!next.has(d.id) && !toDel.includes(d.id)) toDel.push(d.id); });
+    }
+    const now = Date.now();
+    await runChunks(toSet, 10, ([id, d])=> catCol.doc(id).set(Object.assign({}, d, {updated: now})));
+    await runChunks(toDel, 10, id => catCol.doc(id).delete());
+    if(opts.force || pubSigs['~filters'] !== fSig) await pubMetaRef('filters').set(Object.assign({}, filters, {updated: now}));
+    if(opts.photos) await publishAllPhotos();
+    await pubMetaRef('sigs').set({sigs: JSON.stringify(nextSigs), updated: now, count: next.size});
+    pubSigs = nextSigs; pubEnabled = true; pubLastAt = now; pubCount = next.size;
+    return {total: next.size, written: toSet.length, deleted: toDel.length};
+  }
+
+  // Devuelve el resultado, null si no correspondía publicar, o {error} si falló.
+  async function runPublishCatalog(opts){
+    opts = opts || {};
+    if(pubRunning){ pubDirty = true; return null; }
+    pubRunning = true;
+    try{
+      await loadPubState();
+      if(!opts.force && pubEnabled !== true) return null; // nunca se publicó: lo hace el botón "Publicar catálogo"
+      const r = await publishCatalogData(opts);
+      showSyncBanner('public-error-banner', '');
+      return r;
+    }catch(e){
+      console.error('No se pudo publicar el catálogo público', e);
+      if(!opts.force) showSyncBanner('public-error-banner', 'Se guardó el stock, pero no se pudo actualizar el catálogo público: ' + explainSyncError(e), '#B39A73');
+      return {error: e};
+    }finally{
+      pubRunning = false;
+      if(pubDirty){ pubDirty = false; schedulePublishCatalog(); }
+      updatePublicStatus();
+    }
+  }
+  function schedulePublishCatalog(){
+    if(!firebaseReady || !dataLoaded || pubEnabled === false) return;
+    clearTimeout(pubTimer);
+    pubTimer = setTimeout(()=>{ runPublishCatalog({}); }, 6000); // junta varios cambios seguidos en una sola publicación
+  }
+
+  // Copia de las fotos de un modelo+color (se llama cada vez que se suben, reemplazan, borran o cambian de portada).
+  async function mirrorPublicPhotos(key, modelo, color, lista){
+    try{
+      if((await loadPubState()) !== true) return; // si todavía no se publicó, el botón "Publicar catálogo" copia todo junto
+      const dst = pubCol(PUB_PHOTOS);
+      if(!dst) return;
+      if(lista.length) await dst.doc(key).set({modelo, color, photos: lista});
+      else await dst.doc(key).delete();
+      showSyncBanner('public-error-banner', '');
+    }catch(e){
+      console.error('No se pudo actualizar las fotos del catálogo público', e);
+      showSyncBanner('public-error-banner', 'La foto se guardó, pero no se pudo actualizar el catálogo público: ' + explainSyncError(e), '#B39A73');
+    }
+  }
+
+  // ---- Panel "Link para clientes" en la solapa Catálogo ----
+  function publicCatalogUrl(){
+    const p = new URLSearchParams();
+    [['talle','#cat-talle'],['tipo','#cat-tipo'],['color','#cat-color'],['temp','#cat-temp']].forEach(([k, sel])=>{
+      const v = $(sel) && $(sel).value;
+      if(v) p.set(k, v);
+    });
+    const qs = p.toString();
+    return location.origin + '/catalogo' + (qs ? '?' + qs : '');
+  }
+  function updatePublicLink(){
+    const box = $('#pub-link');
+    if(box) box.value = publicCatalogUrl();
+  }
+  function updatePublicStatus(){
+    const el = $('#pub-status');
+    if(!el) return;
+    if(pubEnabled === true){
+      const when = pubLastAt ? new Date(pubLastAt).toLocaleString('es-AR', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'}) : '';
+      el.style.color = '';
+      el.textContent = `Catálogo público activo (${pubCount} combinaciones de modelo y color)${when ? ' · última publicación ' + when : ''}. Se actualiza solo cuando cambia el stock, un precio o una foto.`;
+    } else if(pubEnabled === false){
+      el.style.color = 'var(--danger)';
+      el.textContent = 'Todavía no publicaste el catálogo: tocá "Publicar catálogo" para que el link funcione.';
+    } else { el.style.color = ''; el.textContent = ''; }
+  }
+  async function refreshPublicPanel(){
+    updatePublicLink();
+    await loadPubState();
+    updatePublicStatus();
+  }
+  async function copyText(text){
+    try{ await navigator.clipboard.writeText(text); return true; }catch(e){}
+    try{
+      const ta = document.createElement('textarea');
+      ta.value = text; ta.style.cssText = 'position:fixed;opacity:0;';
+      document.body.appendChild(ta); ta.select();
+      const ok = document.execCommand('copy'); ta.remove(); return ok;
+    }catch(e){ return false; }
+  }
+  function flashButton(btn, text){
+    const old = btn.textContent;
+    btn.textContent = text;
+    setTimeout(()=>{ btn.textContent = old; }, 1800);
+  }
+  $('#pub-copy')?.addEventListener('click', async ()=>{
+    const ok = await copyText(publicCatalogUrl());
+    flashButton($('#pub-copy'), ok ? '¡Link copiado!' : 'No se pudo copiar');
+  });
+  $('#pub-share')?.addEventListener('click', async ()=>{
+    const url = publicCatalogUrl();
+    const talle = $('#cat-talle').value;
+    const text = 'Catálogo Piu Kalma' + (talle ? ' · talle ' + talle : '');
+    if(navigator.share){
+      try{ await navigator.share({title: 'Piu Kalma', text, url}); return; }
+      catch(e){ if(e && e.name === 'AbortError') return; }
+    }
+    const ok = await copyText(url);
+    flashButton($('#pub-share'), ok ? '¡Link copiado!' : 'No se pudo copiar');
+  });
+  $('#pub-open')?.addEventListener('click', ()=>{ window.open(publicCatalogUrl(), '_blank'); });
+  $('#pub-publish')?.addEventListener('click', async ()=>{
+    const btn = $('#pub-publish'), st = $('#pub-status');
+    btn.disabled = true;
+    st.style.color = ''; st.textContent = 'Publicando… con muchas fotos puede tardar un minuto.';
+    const r = await runPublishCatalog({force: true, photos: true});
+    btn.disabled = false;
+    if(r && r.error){ st.style.color = 'var(--danger)'; st.textContent = 'No se pudo publicar: ' + explainSyncError(r.error); }
+    else if(r === null){ st.textContent = 'Ya hay una publicación en curso, probá de nuevo en un momento.'; }
+    else updatePublicStatus();
+  });
+  ['#cat-talle','#cat-tipo','#cat-color','#cat-temp'].forEach(sel=>{ $(sel)?.addEventListener('change', updatePublicLink); });
 
   // ---------- Transferir ----------
   let transferItemOptions = [];
