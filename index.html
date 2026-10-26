@@ -493,6 +493,13 @@
           <div class="field"><label>Locación</label><select id="cat-loc"><option value="">Todas</option></select></div>
           <div class="field"><label>Temporada</label><select id="cat-temp"><option value="">Todas</option></select></div>
         </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:14px 0 4px;">
+          <button class="primary" type="button" id="cat-img-share" disabled>Compartir imágenes</button>
+          <button class="secondary" type="button" id="cat-img-download" disabled>Descargar imágenes</button>
+          <button class="linkbtn" type="button" id="cat-img-reset" style="display:none; background:none; border:none; padding:6px 4px; font-size:13px; text-decoration:underline; cursor:pointer; color:var(--ink-soft);">Volver al principio</button>
+        </div>
+        <p class="hint" style="margin:0;">Arma una imagen por modelo con la foto, el precio y los talles disponibles, y las manda juntas por el menú de compartir del celular (WhatsApp, Messenger, Instagram). Usa la foto que estés viendo en cada tarjeta. Si tu app de chat no aparece, usá "Descargar imágenes" y adjuntalas.</p>
+        <p class="hint" id="cat-img-status" style="margin:6px 0 0;"></p>
         <div id="catalogo-grid"></div>
       </div>
     </section>
@@ -2730,6 +2737,7 @@ const authApi = {
     const grid = $('#catalogo-grid');
     if(!grid) return;
     refreshPublicPanel();
+    updateImgButtons();
     const talle = $('#cat-talle').value, color = $('#cat-color').value, loc = $('#cat-loc').value, temp = $('#cat-temp').value, tipo = $('#cat-tipo').value;
     const filtered = items.filter(it=>{
       if(it.cantidad<=0) return false;
@@ -3054,6 +3062,169 @@ const authApi = {
     else updatePublicStatus();
   });
   ['#cat-talle','#cat-tipo','#cat-color','#cat-temp'].forEach(sel=>{ $(sel)?.addEventListener('change', updatePublicLink); });
+
+  // ---------- Tarjetas con precio para mandar directo en el chat ----------
+  // Una imagen por modelo+tipo+color: la foto (la que se ve en la tarjeta del Catálogo), el nombre, el precio y los talles
+  // con stock. El precio queda escrito en la imagen, así se ve igual en cualquier chat aunque la app descarte el texto.
+  const IMG_BATCH = 10;     // imágenes por envío (el menú de compartir del celular no siempre acepta muchas más)
+  const CARD_W = 800, CARD_H = 1000, CARD_PHOTO = 800;
+  let imgStart = 0, imgSig = '', imgRows = [];
+
+  // Mismas reglas que la grilla del Catálogo, pero los talles de cada modelo se listan completos (con stock),
+  // aunque se haya filtrado por un talle: filtrar "talle 2" deja los modelos que lo tienen y muestra todos sus talles.
+  function catalogShareRows(){
+    const f = {talle: $('#cat-talle').value, color: $('#cat-color').value, loc: $('#cat-loc').value, temp: $('#cat-temp').value, tipo: $('#cat-tipo').value};
+    const groups = new Map();
+    items.forEach(it=>{
+      if(!(it.cantidad > 0)) return;
+      if(f.color && it.color !== f.color) return;
+      if(f.loc && it.locacion !== f.loc) return;
+      if(f.temp && it.temporada !== f.temp) return;
+      if(f.tipo && it.tipo !== f.tipo) return;
+      const tipo = it.tipo || '';
+      const key = it.modelo + '|||' + tipo + '|||' + it.color;
+      let g = groups.get(key);
+      if(!g){ g = {modelo: it.modelo, tipo, color: it.color, talles: new Set()}; groups.set(key, g); }
+      if(it.talle) g.talles.add(String(it.talle));
+    });
+    const rows = Array.from(groups.values()).filter(g => !f.talle || g.talles.has(f.talle));
+    rows.forEach(g => { g.talles = Array.from(g.talles).sort(compareTalle); });
+    rows.sort((a, b)=> a.modelo.localeCompare(b.modelo, 'es') || a.color.localeCompare(b.color, 'es'));
+    return rows;
+  }
+
+  function loadImageEl(url){
+    return new Promise((resolve, reject)=>{
+      const img = new Image();
+      img.onload = ()=> resolve(img);
+      img.onerror = ()=> reject(new Error('No se pudo leer una foto.'));
+      img.src = url;
+    });
+  }
+  // Achica el texto hasta que entre en el ancho disponible; si aun así no entra, lo corta con "…".
+  function fitText(ctx, text, maxWidth, size, minSize, weight, family){
+    let s = size;
+    ctx.font = `${weight} ${s}px ${family}`;
+    while(ctx.measureText(text).width > maxWidth && s > minSize){ s -= 2; ctx.font = `${weight} ${s}px ${family}`; }
+    let t = text;
+    while(ctx.measureText(t).width > maxWidth && t.length > 1){ t = t.slice(0, -2) + '…'; }
+    return t;
+  }
+  async function renderCardBlob(photoUrl, g){
+    const img = await loadImageEl(photoUrl);
+    const canvas = document.createElement('canvas');
+    canvas.width = CARD_W; canvas.height = CARD_H;
+    const ctx = canvas.getContext('2d');
+    // fondo y franja de texto
+    ctx.fillStyle = '#F8F6F2'; ctx.fillRect(0, 0, CARD_W, CARD_H);
+    // foto recortada al centro, cuadrada
+    const side = Math.min(img.naturalWidth, img.naturalHeight);
+    const sx = (img.naturalWidth - side) / 2, sy = (img.naturalHeight - side) / 2;
+    ctx.drawImage(img, sx, sy, side, side, 0, 0, CARD_PHOTO, CARD_PHOTO);
+    // franja inferior
+    const pad = 36, maxW = CARD_W - pad * 2;
+    ctx.fillStyle = '#1A1A1A'; ctx.fillRect(0, CARD_PHOTO, CARD_W, 3);
+    ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'left';
+    const sans = '"Work Sans", Arial, sans-serif', mono = '"IBM Plex Mono", "Courier New", monospace';
+    ctx.fillStyle = '#1A1A1A';
+    ctx.fillText(fitText(ctx, `${g.modelo} · ${g.color}`, maxW, 40, 26, 600, sans), pad, CARD_PHOTO + 58);
+    const detalle = (g.tipo ? g.tipo + ' · ' : '') + (g.talles.length ? 'Talles: ' + g.talles.join(' · ') : '');
+    if(detalle){
+      ctx.fillStyle = '#5C5A56';
+      ctx.fillText(fitText(ctx, detalle, maxW, 26, 18, 400, sans), pad, CARD_PHOTO + 100);
+    }
+    const precio = priceForModelo(g.modelo, g.tipo);
+    ctx.fillStyle = '#1A1A1A';
+    ctx.fillText(fitText(ctx, precio !== '' ? formatPrecio(precio) : 'Consultar precio', maxW * 0.62, 50, 28, 600, mono), pad, CARD_PHOTO + 168);
+    ctx.fillStyle = '#B39A73'; ctx.textAlign = 'right';
+    ctx.font = `600 24px ${sans}`;
+    ctx.fillText('Piu Kalma', CARD_W - pad, CARD_PHOTO + 168);
+    return new Promise((resolve, reject)=> canvas.toBlob(b => b ? resolve(b) : reject(new Error('No se pudo armar la imagen.')), 'image/jpeg', 0.9));
+  }
+  // Devuelve las imágenes de las filas dadas (omite las que no tienen foto cargada).
+  async function buildCardFiles(rows){
+    try{ await Promise.all([document.fonts.load('600 40px "Work Sans"'), document.fonts.load('400 26px "Work Sans"'), document.fonts.load('600 50px "IBM Plex Mono"')]); }catch(e){}
+    const files = [], skipped = [];
+    for(const g of rows){
+      const key = photoKey(g.modelo, g.color);
+      const fotos = photosOf(await getPhotosDoc(key));
+      if(!fotos.length){ skipped.push(g); continue; }
+      const idx = Math.min(catPhotoIndex[key] || 0, fotos.length - 1);
+      const blob = await renderCardBlob(fotos[idx].url, g);
+      const name = [g.modelo, g.tipo, g.color].filter(Boolean).map(sanitize).join('_') + '.jpg';
+      files.push(new File([blob], name, {type: 'image/jpeg'}));
+    }
+    return {files, skipped};
+  }
+  async function downloadFiles(files){
+    for(const f of files){
+      const url = URL.createObjectURL(f);
+      const a = document.createElement('a');
+      a.href = url; a.download = f.name;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(()=> URL.revokeObjectURL(url), 20000);
+      await new Promise(r => setTimeout(r, 350));
+    }
+  }
+
+  function imgBatchRows(){ return imgRows.slice(imgStart, imgStart + IMG_BATCH); }
+  function setImgStatus(msg, bad){
+    const st = $('#cat-img-status');
+    if(!st) return;
+    st.textContent = msg || '';
+    st.style.color = bad ? 'var(--danger)' : '';
+  }
+  function updateImgButtons(){
+    const share = $('#cat-img-share'), dl = $('#cat-img-download'), reset = $('#cat-img-reset');
+    if(!share) return;
+    const sig = JSON.stringify([$('#cat-talle').value, $('#cat-tipo').value, $('#cat-color').value, $('#cat-loc').value, $('#cat-temp').value]);
+    if(sig !== imgSig){ imgSig = sig; imgStart = 0; setImgStatus(''); }
+    imgRows = catalogShareRows();
+    if(imgStart >= imgRows.length) imgStart = 0;
+    const n = imgRows.length, end = Math.min(imgStart + IMG_BATCH, n);
+    const label = !n ? '' : (n > IMG_BATCH ? ` (${imgStart + 1}–${end} de ${n})` : ` (${n})`);
+    share.textContent = 'Compartir imágenes' + label;
+    dl.textContent = 'Descargar imágenes' + label;
+    share.disabled = dl.disabled = !n;
+    reset.style.display = imgStart > 0 ? '' : 'none';
+    imgBatchRows().forEach(g => { getPhotosDoc(photoKey(g.modelo, g.color)); }); // deja las fotos listas antes de tocar el botón
+  }
+  function advanceImgBatch(){
+    const end = imgStart + IMG_BATCH;
+    const from = imgStart + 1, to = Math.min(end, imgRows.length);
+    if(end >= imgRows.length){ imgStart = 0; setImgStatus(`Listo: ${from}–${to}. Eran las últimas.`); }
+    else { imgStart = end; setImgStatus(`Listo: ${from}–${to}. El próximo botón manda las siguientes.`); }
+  }
+  async function runImgAction(mode){
+    const rows = imgBatchRows();
+    if(!rows.length) return;
+    const share = $('#cat-img-share'), dl = $('#cat-img-download');
+    share.disabled = dl.disabled = true;
+    setImgStatus('Armando imágenes…');
+    try{
+      const {files, skipped} = await buildCardFiles(rows);
+      if(!files.length){ setImgStatus('Ninguno de estos modelos tiene foto cargada (Variables → Fotos).', true); return; }
+      const aviso = skipped.length ? ` (${skipped.length} sin foto no se incluyeron)` : '';
+      if(mode === 'share' && navigator.canShare && navigator.canShare({files})){
+        await navigator.share({files});
+        advanceImgBatch();
+        if(aviso) setImgStatus($('#cat-img-status').textContent + aviso);
+      } else {
+        await downloadFiles(files);
+        advanceImgBatch();
+        setImgStatus((mode === 'share' ? 'Este navegador no puede abrir el menú de compartir, así que se descargaron las imágenes. ' : 'Se descargaron las imágenes. ') + $('#cat-img-status').textContent + aviso);
+      }
+    }catch(e){
+      if(e && e.name === 'AbortError'){ setImgStatus('Cancelaste el envío: no se avanzó de tanda.'); }
+      else { console.error('No se pudieron preparar las imágenes', e); setImgStatus('No se pudieron preparar las imágenes: ' + (e && e.message ? e.message : e) + ' Probá con "Descargar imágenes".', true); }
+    }finally{
+      share.disabled = dl.disabled = !imgRows.length;
+      updateImgButtons();
+    }
+  }
+  $('#cat-img-share')?.addEventListener('click', ()=> runImgAction('share'));
+  $('#cat-img-download')?.addEventListener('click', ()=> runImgAction('download'));
+  $('#cat-img-reset')?.addEventListener('click', ()=>{ imgStart = 0; setImgStatus(''); updateImgButtons(); });
 
   // ---------- Transferir ----------
   let transferItemOptions = [];
