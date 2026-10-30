@@ -361,6 +361,7 @@
             <label class="chip"><input type="checkbox" value="temporada" checked>Temporada</label>
             <label class="chip"><input type="checkbox" value="subtemporada" checked>Subtemporada</label>
             <label class="chip"><input type="checkbox" value="locacion" checked>Locación</label>
+            <label class="chip"><input type="checkbox" value="codigo" checked>Código de producto</label>
           </div>
           <p class="hint" style="margin:8px 0 0;">El talle siempre se muestra como columnas (una por cada talle), con el total por fila y por columna al final.</p>
           <div id="export-col-msg" style="margin-top:10px;"></div>
@@ -708,7 +709,7 @@ const authApi = {
   function uid(prefix){ return (prefix||'id')+'_' + Math.random().toString(36).slice(2,10); }
 
   // Orden fijo para agrupar/ordenar el stock: Modelo, Color, Talle (numérico), Temporada, Locación.
-  const FIELD_PRIORITY = ['modelo','tipo','talle','color','temporada','subtemporada','locacion'];
+  const FIELD_PRIORITY = ['modelo','tipo','talle','color','temporada','subtemporada','locacion','codigo'];
   // Un solo Collator reutilizado: da el mismo orden que localeCompare('es', base) pero es mucho más rápido
   // al ordenar miles de líneas.
   const collatorEs = new Intl.Collator('es', {sensitivity:'base'});
@@ -1585,8 +1586,10 @@ const authApi = {
     saveWorkbook(wb, 'planilla-modelo-stock.xlsx');
   });
 
-  const EXPORT_COL_LABELS = {modelo:'Modelo', tipo:'Tipo', color:'Color', temporada:'Temporada', subtemporada:'Subtemporada', locacion:'Locación'};
-  const EXPORT_COL_ORDER = ['modelo','tipo','temporada','subtemporada','color','locacion'];
+  const EXPORT_COL_LABELS = {modelo:'Modelo', tipo:'Tipo', color:'Color', temporada:'Temporada', subtemporada:'Subtemporada', locacion:'Locación', codigo:'Código'};
+  const EXPORT_COL_ORDER = ['modelo','tipo','temporada','subtemporada','color','locacion','codigo'];
+  // El código no vive en cada ítem de stock: se toma del catálogo de modelos (modelo+temporada+subtemporada+tipo).
+  function exportDimValue(it, d){ return d === 'codigo' ? codigoFor(it) : (it[d] || ''); }
 
   $('#btn-export').addEventListener('click', async ()=>{
     const msgBox = $('#export-col-msg');
@@ -1607,12 +1610,13 @@ const authApi = {
 
     const talles = Array.from(new Set(items.map(it=>it.talle))).sort(compareTalle);
 
+    codigoIdx = null; // reconstruir el índice por si el catálogo cambió desde el último dibujado
     const groups = {};
     items.forEach(it=>{
-      const key = dims.map(d=>String(it[d]||'')).join('|||');
+      const key = dims.map(d=>String(exportDimValue(it, d))).join('|||');
       if(!groups[key]){
         groups[key] = {};
-        dims.forEach(d=>{ groups[key][d] = it[d]||''; });
+        dims.forEach(d=>{ groups[key][d] = exportDimValue(it, d); });
         talles.forEach(t=>{ groups[key][t] = 0; });
         groups[key].__total = 0;
       }
